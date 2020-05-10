@@ -1,0 +1,59 @@
+Time Complexity - In simple terms the amount of time required to complete a program is called
+its Time complexity. In general terms it can be also termed as number of instructions required 
+to complete a operation is termed as Time Complexity. One may argue that Time taken for a method
+cannot always be same as Time taken to complete its instructions since there may be blocking due
+to Locks,DB,File system etc. But we are asuming there would be no blocking and the program is 
+linear in nature.
+
+Space Complexity - The amount of space a algorithm take, so if a algo is looping n number of times
+and creating a local variable,we will term this as O(n) space complexity.
+
+
+Both Time and space complexity is measured in terms of B(o) notation,where we ignore the constants
+and focus on more substantial n. So if the actual complexity of the program is 
+2n+3n+5= (2+3)n+ 5 ,we would ignore the constants and simply say the complexity is n.
+
+
+Big O Notations (Below are various Big o notations, going from top to bottom is increasing values
+-------------------------------------------------------
+1		- Constant 1
+Log(n)  	- Logarithmic
+	Example is binary search
+	
+N		- Linear
+	Example is linear search,where the worst possibility is to search all items
+N*log(n)	- log-linear
+N raised by 2	- quadratic
+	Example is bubble sort
+N raised by 3	- cubic
+2 raised by n	- exponential
+N! 		- factorial
+
+
+----------------------- Datastucture/Algo --------------------------------
+Binary Tree - A binary tree is a tree structure where any node can have a max of 2 child nodes.
+Binary Tree structure is generally used when we need faster retrival of data.
+It is based on greater than,less than fundamental where all nodes on the left represent < nodes
+and on the right represent > nodes for e.g. 
+
+			4
+		2		7
+	1	    3	   6		8
+			 5  		
+
+			
+			
+----------------------- What is Log(n)---------------------------------------
+
+In simple terms , log(8) = 3 i.e. 2*2*2 = 8,it says how many times do we multiply 2 to get 8.
+
+so in mathematical terms 2raised to x = 8
+
+
+------------------- Directed Acyclic graphs (DAGs)----------------------------------------------
+
+DAGs can be thought of a graph which will never complete its cycle, i.e. never can come back to its previous node.
+
+a--> b --> c --> d.
+
+Above is a very simple acyclic graph where the data is flowing only in 1 direction.

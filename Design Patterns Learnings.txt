@@ -1,0 +1,151 @@
+Creational Patterns :
+
+Factory and Abstract factory : 
+ Factory pattern is very popular creational pattern.This is used when we have a business case to
+ abstact object creation. i.e. the consumer does not need to know how the object is created 
+ and which particular object is being sent,we use this pattern.For e.g. ConnectionFactory.
+ We simply call the connectionFactory's get connection method and expect a connection to
+ be returned. Whether the factory class is creating a new connection each time or fetching
+ it from connection pool or any other way is immaterial to the consumer. This is clear
+ seperation or abstaction of business logic.
+ 
+ Abstract Factory is sort of Collection of factories,where one class encapsulates a 
+ number of factory classes, which can then be used as a regular factory.It is called
+ abstract factory because it provides a abstraction above factory pattern.
+ 
+Builder pattern :
+If there a complex object which needs to be constructed, it makes sense to abstract related
+steps in one step and execute all the steps one by one. For e.g. They way FI object is
+currently created in morgan project. FI has so many dependencies like names, industry hieararchies
+company info etc that if all is done in one method it becomes very difficult to debug and
+understand. So we split this is related methods like enhanceCompanyInfo,enhanceIndustryInfo etc
+so that is becomes more cleaner.
+
+
+Singelton :
+This is a very popular creational pattern. This is all about when we need to allow only one object
+to be created for a particular class.So we provide a private constuctor, so that there is no
+direct way of creating the object. We then provide a getInstance method which abstracts the logic
+of creation. There are 2 ways of handling singelton.
+
+Early Loading: Below implementation is an example of early (class time) loading,which is guarnteed
+to be thread safe,but such implentation is not preferred in some cases,so we use lazy loading.
+Below example of lazyloading uses 2 checks for nullability because of synchonization issues
+and is thread safe. Note the singletion varibale is declared as volatile because volatile
+variables are directly written to memory and are readily visible. If not declared as volatile,
+the program has chances to create multiple objects
+
+public class EarlyLoadingSingelton {
+private static singelton =new EarlyLoadingSingelton();
+
+public static EarlyLoadingSingelton getInstance(){
+	return singelton;
+}
+}
+
+public class LazyLoadingSingelton {
+private volatile static singelton =null;
+
+public EarlyLoadingSingelton getInstance(){
+	if (singelton == null){//Single check
+		syncronized(EarlyLoadingSingelton.class){
+			if (singelton == null){// Double check
+				singelton =LazyLoadingSingelton
+			}
+		}	
+	}
+	
+	}
+	return singelton;
+}
+}
+
+
+ProtoType and clonning:
+ProtoType pattern is nothing but clonning.This pattern is used when creation of an object
+is an expensive operation for e.g if DO (Data object), which is created by making DB call.
+So in this case it makes sense to simply clone or copy all the state of the current
+object into a new object. For the very same reason we have clonneable interface which is 
+a markable interface which supports clonning via its .clone() method.
+
+There are 2 types of clonning . by default clone method uses shallow copy.
+1) Shallow copy : when used this all the primitive data types for the object are clonned,
+but if the object has a custom object, only reference is clonned and not the object.
+
+2) Deep copy : It clones object instance variables too.
+
+Class Employee implements Clonable{
+	int empId;
+	String empName;
+	Department dept;
+
+}
+
+So if are using clone method and expect dept would be clonned as well,then it is not the case.
+The clonned object will have the same reference to Department object,which can be critical.
+To change the behaviour we need to overide clone method to create a clone of dept as well.
+
+
+Structural Patterns:
+
+Adapter Pattern : As the name says,this pattern is used when we want a communication link
+between 2 non-speaking system. For e.g. a typical use case was Order Input for project zts.
+
+ZTS processes orders in an order xml format.Now we can have n number of systems like EDTS,PTMS
+etc which produces different formats for orders like EDTS,we poll DB , PTMS sends a different
+order xml.So the solution is respective adapters for respective systems. So for PTMS we have
+PTMS adapter which takes PTMS xml and converts it into order xml and sends it to ZTS.
+
+Bridge Pattern : 
+Bridge Pattern talks about seperating abstaction from implementation.Typically when we have
+relationships between entities, join the entities by abstaction and not concreate implementation.
+For e.g. in the below example FI and Equity are type of Product and Product itself has an
+aggregation relationship with Region. This implementation makes it very easy to change a concreate
+region for a particular Product.
+
+Product --> Interface
+	Region ---> Interface
+	
+	
+FI implements product
+Equity implements product
+
+EMEA implements Region
+America implements Region
+
+
+Facade Design Pattern : Facade Pattern is almost used in all frameworks and API's which promote loose
+coupling. A Typical example is dependency between Service Layer and Dao Layer.
+Typically what we would do is define an interface for Dao which has some methods which is then
+implemented by some class say DaoImpl. We would then refernce this interface in service layer and not the
+actual implemented DaoImpl,because we may have different implementations for Dao like CacheDao or DSDao.
+From a service layer point,it does not matter which implentation is passed, it is just intersted in 
+the actual operation and does not about the complexity of this operation.
+
+This is very common pattern hence,examples would be all specifications like servlet specification,JDBC specification
+or any, we are getting the same result irrepective of the implementation.From a user perspective we know what the
+interface takes and what it returns back.
+
+
+----------------------------------------- J2EE Patterns ---------------------------------------------------
+
+Front Controller : In this pattern,it is recommended to have a single point for all incoming requests,so that
+common tasks like authorization/authentication could be handled at a central place and not duplicated accross
+all servlets.Majorly we would have a single Front Controller servlet which would handle common tasks and
+forward the request then to subsequent BL. JSP Front Controller is also defined as one of the options,
+however it is not recommended since the sole purpose of JSP is to be a view and hence should not have any
+other controlling tasks.
+
+A very good example for Front controller is Dispatcher servlet in Spring.
+
+Data Transfer Object (DTO) : This very much means the object which needs to be sent across layer 
+(hence is also serialized) . Typically this is a different object than the Data Object (which is similar to a table from DB).
+In a typical UI client --> Server communication, we go to the DB and fetch values from DB and form a Data object which
+simply has values which are stored as in in DB. Now we need to convert this DO into an object to be sent across to UI.
+This can be termed as DTO or VO(value object in some cases).Clearly this provides benefits of seperation of DB object and 
+UI object(VO).
+
+
+
+
+

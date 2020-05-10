@@ -1,0 +1,60 @@
+------------------------------ Problem with Traditional Waterfall approach ----------------------------
+
+
+Move on to next phase only when current phase is completely done.
+Deliever the complete software as 1 chunk.
+Feedback from users can be taken only when the complete development is completed
+and if they dont like anything or any other changes, it becomes all that diffucult to achieve.
+
+So if a software takes around 3 months of development and it was not accepted all the
+time is completly throw away.
+
+----------------------------- Basics of Agile --------------------------------------------
+
+Divide your delievery into smaller logical features and deliever and take feedback,
+as feedback on a live running system is much more meaningful and relevant than otherwise.
+Each smaller delievery is called 'Sprint' which is typically 2-3 weeks each.
+Above divide and conquer approach also helps to manage risks better, and gives you more
+chance if the requirement changes after feedback.
+
+
+
+------------------------------ Scrum Basics ----------------------------------------------
+Scrum can be defined as 'Get-together', where each participant on a team including 
+developers,Project Owner and other parties involve and discuss progress and challenges.
+This enables more transperency and accountability as each and every member of your team
+exactly knows what others are doing.
+
+Scrum Master : Normally a Tech Lead or Mentor takes this position and he drives the scrum call.
+
+Project Owner : He is normally like a business analyst who is hands on with the business requirement
+and moniters health of the project.
+
+---------------------------- Story Points Vs Man Hours--------------------------------------
+
+Tradinally we always try and do estimation in man hours, though it is the most natural and easily
+understood metric, it has its own challenges.
+
+Challenges
+	Mostly estimation is done by Project Manager or seniour members in the team.
+	The estimation is based on their experience and skills, so a given task they may estimate it to be 2 hours.
+	If this task is perfomed by a juniour resource, then he might take 4 hours, in which case it is reflected as the person is not efficient.
+	If this task is perfomred by a very senior resource, who completes in 1 hour, then it is reflected that the estimations were not correct.
+	The above can create lot of friction in the team and too many unnecessary discussions around team efficiency.
+
+To over-come above challenges, story points was devised as a mechanism for estimation, which is more abstract or indirect than story points.
+
+----------------------- Story points and velocity-------------------------------------
+
+So now if a given task is assigned 2 story points and if a junior member does it in 4 hours, his velocity is 0.5 SP/hour
+and if a seniour member does it is 2 hours, his velocity is 1 SP/hour.
+
+The above makes sense because it is expected for a seniour to have a better velocity.Story points can also be used to estimate when a given project
+whould complete. For e.g. if the combined velocity for a team is 100 SP/week and the backlog effort is 400 SPs's, and if the sprint cycle is 2 weeks
+you know it would take 2 sprints to complete the backlog.
+
+
+
+-------------------- Things to understand ------------------
+
+Scrum vs kanban.Difference and use-cases. Why does Kanban not have a plan phase?

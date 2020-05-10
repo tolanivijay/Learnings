@@ -1,0 +1,82 @@
+
+gc is a daemon thread which runs in the background.
+
+Out of memory Error is a fatal error which means the space used by the objects is more than the max allocated heap for the JVM.
+Xms and Xmx are the params which are used to configure a JVM with max and min heap.
+
+Which objects are elligible for GC:
+1) Objects which have no references pointing to.
+
+Steps performed by the GC.
+1) Mark 2) Sweep 3) Compacting
+
+2 Types of GC's i.e. major and minor and both are stop the world
+which means that all ongoing JVM activity is stopped when they run.
+
+
+------------------------------------------ Structure of Heap and GC process ------------------------------------------------
+Heap has broadly 2 main areas 
+
+1) Young Generation
+	This generation is again divided into the 3 below
+	a) Eden space :
+			This is the area where all new objects are created, this is called eden as per theory from Eden	
+			that life started from Eden garden.
+	b) Surviror space from :
+			This area is used to have objects which survived minor gc.
+	c) 	Surviror space to :
+			This area is used to have objects which survived minor gc.	
+
+
+2) Old Generation
+	There is a threshold defined (default is 16) for objects to be moved over to Old generation which survived
+	that long. So the objects which survived 16 minor gc's would be moved over to old generation.
+
+
+Process of Minor GC :
+	Minor GC is only done in Young generation.Below is broadly what happens in Minor GC.
+	
+	Move from Eden to Surviror spaces
+	
+	As we know all the newer objects are created in Eden space. Once the event of eden space being full, a minor GC
+	is triggered. This minor GC would mark and sweep the objects from eden space which are no longer used to either
+	of the survivor space possibly based on modulo count, so on 1,3,5 runs it would send objects to Surviror from
+	and 2,4,6 it would send objects to Surviror to.Each minor GC would mark the objects as surviving count as 1.
+	
+	Movement between Survivor spaces
+	
+	Also objects are marked and swept to other area from respective runs between survivor areas, so on minor gc run
+	2,4,6 mark and sweep is done on from space which would move objects to To space and on runs 3,5,7 it would happen
+	on survivor space To which would move objects to from space. Also the surving objects are incremented with surving 
+	count before moving to the other area. So if the movement happens from From to To and if a object has survived 7 cycles
+	it is stored as 8 in To area.
+	
+	Move to Old-generation
+	If a object has survived threshold say 16 it is moved over to Old generation.
+
+Process of Major GC :
+	Major GC is stop the world and would trigger when the older generation is about to be full. It works on both
+	Young and old generation area and would do the same mark/sweep/compacting.	
+	
+----------------------------------- Types of GC ------------------------------------------------
+
+Serial : This type of GC is single-threaded in both old and young generation and is the most primary of all the GC's.
+
+Parallel : This is the second generation of GC, where in the processing is multithreaded and much faster than Serial.
+			This is the default on Java 6 & 7. There are configurations for the JVM where in we can make the Older generation
+			sweaping/marking to be single-threaded or multithreaded.
+
+CMS (Concurrent Mark Sweep):This is the 3rd generation of GC and much faster than Parallel because it runs in parallel to 
+			the normal program, only the mark/unmark operation is stop the world otherwise rest of the operations very
+			much run concurrently to the other non-daemon threads.
+			This should be preffered GC for any application.
+			
+G1 (Garbage first) : It is the latest of all the generation and the default one for Java 9, though we can use G1 on Java 8 too.
+					It is the most advanced of all. In other generations, we just have Eden,Surviror and old regions.
+					In G1, the whole heap is divided into multiple regions and each region can be tagged with Eden,Surviror and Old.
+					Also it introduces new area called 'Humangaous', which would typically store super large objects.
+					
+					
+					
+
+	

@@ -1,0 +1,16 @@
+-------------------- Categories of Estimation Techniques -----------------------------
+1) Analogous or Top/Bottom approach : This approach is used when we have very high level
+	information regarding a project, so it is more of a guess-estimates.
+	For e.g. we say it will take around 3-5 weeks for the project to complete 
+	
+2) Parametric approach : Here we rely on historic data to map current work and come up
+	with estimates. For e.g. a relatively similar project with same resources
+	was done in x days, and the current work is around double the work , so the
+	estimates would be 2x.
+	
+3) Micro or bottom top approach : This approach provides better estimates,but the
+	pre-requisites for this approach is stable requirement. Once we have
+	stable requirements, we would then try and break down that work into
+	smaller measurable chunks and then put down estimates for these chunks,
+	which would then give better estimates.
+	

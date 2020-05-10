@@ -1,0 +1,68 @@
+------------------------------------- Java script ---------------------------------------------------
+
+Javascript vs Traditional OOPs languages
+
+In java script, there are no classes . Everything is objects . So people who may want to
+reuse the same object to create a new object , do it via prototying or copying . Need to know more on this
+
+ 
+In java script ,methods and properties are public , but we can still hide the data . How ?
+
+
+In Javascript like java , a variable can be either a primitive or object.
+
+Primitive types
+Number
+String
+Boolean
+
+Special Types
+Infinity (a number too big or small which is not supported)
+NAN (Not a number) : a variable as the name says which is not a number
+	For e.g. var a=10 * 'f';
+	In this case we are performing multiplication of number and string,hence when we ouput a on console ,
+	NAN is printed.
+	Incidently NAN is a type of Number in Javascript, so the below prints "Number" on the console
+	typeof a;
+Null : a object which is defined ,but does not have any value
+
+Undefined : if a variable is not initialized at all , it outcomes as undefined
+
+	
+typeof : It is a operator (like instanceof in java) , which translates into either of the following
+
+number
+String
+boolean
+undefined
+object
+function
+
+
+Difference between == and ===
+(== is sort of a loose comparision where it converts the type before comparing.so if we
+use num == str below it converts num to string internally and then does the comparision,
+as against === which checks for both type and content for equality )
+
+var str="123";
+var num=123;
+num == str //return true
+num === str //return false
+
+
+Strange things
+1) If we use a boolean operator with string , it is converted to boolean
+
+var b="abc";
+var c=!b;
+c;
+false
+
+
+
+
+	
+Things to know in javascript
+1) arrays, reference and scope
+2) objects, classes, and prototypal inheritance
+	

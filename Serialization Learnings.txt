@@ -1,0 +1,42 @@
+Need for Serialization : 
+
+When objects have to be passed between 2 different JVM's, serialization is used.
+So it can be defined as a process to flatten an object to byte[] which can be written
+to the network.
+	
+How to Serialize : Simply implement the Serializable interface which is a marker interface with no methods.
+
+	
+SerialVersionUID :
+This is an important final variable which is recommended to be provided if a class is Serializable.
+If not provided, JVM will calculate the same. This is this persisted along the flatting of the object.
+Now if we send the object to some other JVM, the other JVM will calculate the versionID again as it is
+not provided, and if for some reason these Id's mismatch, we get an exception. Hence it is always
+recommended to provide this Id.
+
+
+Transient :
+If we want any field to not be persisted while serialization, then we can declare it as transient 
+and the same wont be available upon deserialization at the other end.
+
+
+Nested Objects :
+In java it is normal to have nested objects i.e an Employee object can have Dept object inside it.
+So now if Employee object is serializable then Dept also needs to be serializable else we get an 
+exception.
+To avoid this exception, either we declare Dept as Serializable or mark it as transient.
+
+Also if still we want Dept to be transported well, then we will need to provide implementation 
+for readObject() and writeObject() over-selves in Employee class.
+Behind the hoods of serializable/deserialization, these methods are called, so here we are 
+overriding them. The only thing to remember here is that the sequence of fields in readObject and writeObject
+should be same.
+
+
+Statics in a class :
+Static variables of a class are not serialized.
+
+Inheritance :
+If a super class is serializable, then all its sub-classes are automatically serializable.
+If a super class is not serializable, then children will have to explicitly define itself as serializable.
+However in above case, the parent needs to have a default constructor.

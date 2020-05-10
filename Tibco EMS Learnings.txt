@@ -1,0 +1,61 @@
+TIBCO EMS (Enterprise Messaging server) is the heart of the communication channel.
+All producers send message to this server and all subsribers are sent messages from this server.
+So it can be said to be a central point of communication for all message producers and subscibers.
+All queues or Topics are hosted on this EMS server.
+
+--------------------- Message delivery Modes ---------------------
+
+JMS specification specifies 2 delievery modes
+1) Persistent
+2) Non-Persistent
+3) Reliable
+
+Only Peristent messages are persisted,not the other 2 types.
+
+
+
+---------------------------------- Topics -----------------------------------
+
+Topics are objects just like a queue which are used in pub-sub mechanism,where a single
+message needs to be delievered to more than one subcribers.
+
+Durable and non-durable subscribers(or message consumers).
+	Subsribers can be registered as durable or non-durable. When durable subsciber
+	is created it is like a subsciber which is registered with EMS for the topic as 
+	'Get all messages on the Topic always'. This means it is guranted that all messages
+	written on that Topic are guranted to be received by the subsciber irrespective
+	that the subsciber is online or not at the time of message send. So for e.g.
+	if 2 messages are delievered on a Topic when a durable subcriber was down,
+	these messages are stored on the Topic till the time this subsciber comes back up
+	and consumes this message.
+	
+	Non-Durable : On the contrary if a subsciber is registered as non-durable and messages
+	are sent when it is offline, the messages are not delievered to this subcriber.
+	A new subscription is created when it is comes back online and only messages created
+	later make it to the subcriber.
+	
+----------------------------- 	Persistent message store mechanism ----------------------------------------
+
+The EMS server has 2 options for Persistent message stores on the disk.
+	1) Async : This is the default option and messages are persisted asyncronously i.e. the
+			Producer is not blocked till the time the message is persisted. So if a persist fails,producer does not
+			know about it
+	2) Sync : In this case, producer is blocked till the message is persisted by the EMS server.		
+	
+----------------------------------- Bridges ----------------------------------------------------
+
+Bridges are used when the same message needs to be sent to more than object. For e.g. if the same message
+needs to be sent to my consumers and also to an app for Data warehousing or a different Topics based on
+message headers.
+
+We can bridges between any objects i.e. between Queue and Topic or Topic and Queue or any other combo.
+So for e.g. i have a bridge from a Topic to queue , so all messages on this topic or landed in the respective
+queue as well, so i want a subset of messages to be sent to other Topics say for e.g. based on header 'urgency',
+so i can have a message selector on bridge with query and only those messages are sent to this Topic.
+
+Please Note here that Bridges can be setup only for objects on the same EMS server. For communication 
+between one or many EMS server,use routes
+
+----------------------------------- Routes ----------------------------------------------------
+
+Routes are used, when we need communication between objects (Topics or queues) on different EMS server.

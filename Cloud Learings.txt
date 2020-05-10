@@ -1,0 +1,139 @@
+---------    Basics of Cloud Computing --------------
+
+------------ Vm's vs Containers (e.g. Docker) -------------
+
+VM :	
+VM or virtual machine is on a high level a logical slice of a physical machine.
+So for e.g. i have a machine which has 100GB of Harddisk and 10 GB of RAM, i can
+create 5 slices of 20GB HD and 2 GM RAM and give logical names to them. These
+slices would now work like individual machines. Each of these slices would have	their own
+OS and people can login into them without even knowing if they are logical slices or
+physical machines. Interesting point is each of these slices can have different OS too.
+Layer Arch of VM :
+	1) Hardware (RAM & HD)
+	2) Host OS
+	3) Hypervisor (Software used to enable Virtiaulization)
+	4) Slices (or VMS)
+		a) Guest OS
+		b) Apps on top to Guest OS
+
+In above Hypervisor is the software which is required and which enables virtualization or Slicing
+		
+Containers : 
+Containization is a concept which tries to wrap an application and all its dependencies in a container
+so that it could be deployed as a one unit and so it is just a lift and shift approach for applications
+to be deployed anywhere. So for e.g. a Java app has dependencies of file system for configurations or
+say app server like tomcat. All of these dependencies will be wrapped up in a same container, so it is like
+deploy the container at any place and it would run fine as everything is deployed as a single unit.
+so containers once packaged can be deployed on a physical or a VM. 
+The important aspect to understand here is unlike VM's each container will not have a Guest OS installed,
+so all the containers will use the underlying OS where they are deployed.
+
+
+--------------------   Azure Compute Options ------------------
+
+Computing is on high level where to get an app deployed in Azure. Azure provides us 4 compute options as below
+
+1) VM's
+2) Containers
+3) server-less computing (e.g. functions)
+	Server-less on a high level means define your functionality and submit it to Azure and it will take care 
+	where these needs to be deployed and other similar aspects. So we dont need to containerize them or
+	deploy them on VMs, we just define the functionality (via functions) and not worry anything more.
+	Functions are typically end-points of events, say trigger an email(function) if the order is placed.
+4) Azure App Service
+	Typically for mission critical apps which are performance oriented, Azure provides this option where
+	it would scale apps for us and we have to focus only to provide Business logic.
+
+	
+----------------- Azure Data Storage Options ----------------------
+It seems Azure has very limited options w.r.t data storage and it supports MSSQL and Cosmos DB (NoSQL DB like MongoDB).
+However need to explore more if required.
+
+
+------------------ Azure Disk Storage Options ---------------------------------
+
+1) Virtual or Unmanaged disks	: 
+2) Managed disks 				: They have better availability than virtual disks.
+
+--------------------- VM's in Azure --------------------------
+All Vm's in Azure have at-least 2 disks associated with it.
+	1) OS Disk
+	2) Temp Disk : Data here will get lost when the VM is shutdown.
+
+
+
+------------------ Accessing Azure ------------------
+Need to explore these methods.
+	Azure portal
+	Azure PowerShell
+	Azure CLI
+	Azure SDKs (like .NET, Java)
+
+--------------------- Azure Basics -----------------------
+
+Resource Groups : 
+Any resources in Azure (i.e. VM's,Web apps etc), need to be part of Resource Groups.
+It is just a way to bucket resources together.
+
+
+App Service Plan (ASP) :
+In Azure, cost is determined by the usage of the apps in terms of CPU, RAM etc.
+For e.g. if i say i need 2 CPU cores and 2 GM of RAM, and my services should run in 
+West india, an ASP is prepared and i can assign services to the given ASP. I can assign
+n number of services to this given ASP. So on a high level it is a meta of billing. Below are the factors
+for an ASP
+
+	Region (West US, East US, etc.)
+	Number of VM instances
+	Size of VM instances (Small, Medium, Large)
+	Pricing tier (Free, Shared, Basic, Standard, Premium, PremiumV2, Isolated)
+	
+	
+------------------- Azure Resources -------------------------
+App Services (or Web app) :
+
+This can be thought of an Website end-point which is exposed over the web, so for e.g.
+if we want a restful endpoint being exposed over the web, we simply create a App Service 
+and it is then exposed over the web.
+
+An important aspect here is these services may not be hosted on a VM, we can just create a
+service and Azure will host it on any VM and we dont even know where the service is hosted.
+
+Logging of these services :
+As we saw a service can be deployed anywhere, so how do we access logs for the same.
+Logs can be enabled under Monioring --> 'App Service Logs', and these logs are then 
+shown as a stream on the UI with Monitoring --> 'Log Stream'.
+
+Also a very important aspect which Azure exposes is Kudu Console. This is found under
+Development Tools --> 'Advanced Tools'. It has lots of features and one of it is going to
+the Logs directly from browser via SSH or Bash or even Stream the logs as we saw above.
+
+
+----------------------- Template based products for IAC (Infra as Code) -----------------------
+These are all supported on Azure and help in maintaining Infra as a code i.e. can maintain Infrastructure
+in scripts which can then be used to deploy the whole infrastructure via scripts.
+
+1) Terraform
+2) ARM
+3) Ansible 
+4) Jenkins
+5) Puppet (UBS Deploy)
+
+
+---------------------------------- Containers ---------------------------------------------
+Azure Container Registry (ACR) 	: This is like storing my own images on Azure.
+Azure Container Instance 		: It is a way to create my own Container Instance. 
+								  Need to check how to launch a image from ACS.
+Web app for Containers 			: This is the way to create webapps for Containers								  
+								  (i.e. Spring boot or Tomcat ones)
+
+
+
+------------------- Things to check -------------------------------------------------------
+Azure :
+	Need to check how logs are updated and if we can check logs via SSH to host-name etc.
+
+
+Kudu : What is Kudu and what does it provide.
+Azul Zulu : It provides JDK, Need to understand more.

@@ -1,0 +1,87 @@
+-------------------------------Spring -----------------------------------------------------------
+
+Modules available in Spring
+
+1.	The Core container module 
+	This would contain the core modules available in Spring like beans , SPEL (Spring Expression Language),
+	application context etc
+
+2.      AOP module (Aspect Oriented Programming)
+3.      JDBC abstraction ,DAO ,O/R mapping and JMS modules including Transaction management
+
+4.      Web module including Spring MVC
+
+
+There are 2 ways broadly in Spring to register beans to the container
+1) Define the beans in xml and load the xml
+2) Use the context name space in xml which has java annotations which will automatically scan the package
+   and find beans with specific annotations and register them.
+   
+   
+   For e.g. the below two annotations will make Spring scan the base package and register all beans
+   having annotations @Service,@Component and more to Spring
+   
+   If we need to activate @Required or @AutoWired in the context, we need to include
+   <context:annotation-config /> , or else the tags inclusion is not supported
+   
+   <context:annotation-config /> 		
+   <context:component-scan base-package="vijaylearn.spring" /> 
+
+   @Component("dependencyBeanAnnotate")
+   public class DependencyBean {
+   }	
+   	
+
+Inversion of Control : This is a programming techique which primarily focuses on resolving dependencies
+at run-time and not compile time. By doing so it decouples dependency and code itself.
+
+There are many techniques for IOC and DI(dependency injection) is one of them. Others are
+Dependency lookup(like JNDI lookup).
+
+Dependency Lookup : When we are using spring on a standalone application, we often start by
+looking up a applicationContext or load a said .xml. This is nothing but lookup. This is
+different from using spring on web applications where all aspects get glued up automatically
+in the container.
+
+
+Lazy-Init : We have this property lazy-init which can be applied to complete beans config file or
+even to a specific bean. This would result in the bean being initialiazed only when it is called for.
+By default lazy-init is false.
+Interesting if a lazy init bean is a dependency for an active init bean,spring container will
+ignore lazyiness of this bean and will init it at startup.
+   
+
+
+----------------------------------------- Bean Scope ---------------------------------------------
+1) Singelton : All beans are singelton by default. Please note that the singelton here is a bit
+		different from the conventional Singelton. Conventionally a singelton class is
+		only one object per JVM, but for spring it is one object per context.
+		Actually we have more than one contexts loaded on a JVM, so actually it would
+		mean 2 objects of the class in that JVM.
+
+So for example if i define 2 beans on the same class with seperate Id's, Spring will still create
+2 beans in the JVM, if it were true singelton, i would get just 1 object.
+
+
+2) Prototype : It is completely opposite to singelton i.e a new object is created for each
+		dependency, so if i have a class as dependency in 2 places and the bean
+		scope is prototype,spring will create 2 seperate objects for these dependencies.
+
+
+
+Questions ..
+
+1) What is the difference between BeanFactory and ApplicationContext ?
+2) List different types of Context and the diffence between each of them .
+	a) ApplicationContext
+	b) ClassPathXmlApplicationContext
+	c) GenericXmlApplicationContext
+3) What is difference between id and name of bean xml tag
+4) We can create a parent child relationship between 2 application Contexts. This is majorly used if
+   the application is big in size. Need to learn more on this
+5) Need to understand usage of method replacement and method lookup injection   
+6) Need to understand how can we have 2 contexts running in a same JVM.
+7) Need to understand Spring validation framework.
+8) Need to understand ContextLoaderListener and its usage.
+9) What is CXFServlet used for ?
+

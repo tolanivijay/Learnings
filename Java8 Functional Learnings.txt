@@ -1,0 +1,27 @@
+
+
+
+
+------------------- Need to check ------------------------
+
+Spring boot has a functional interface CommandLineRunner
+
+@FunctionalInterface
+public interface CommandLineRunner {
+	void run(String... args) throws Exception;
+}
+
+However it was implemented as below, not sure how.Need to check on this.
+
+@Bean
+    public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
+        return args -> {
+            String[] beanNames = ctx.getBeanDefinitionNames();
+            Arrays.sort(beanNames);
+            for (String beanName : beanNames) {
+                System.out.println(beanName);
+            }
+        };
+    }
+
+-----------------------------------------------------------

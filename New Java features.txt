@@ -1,0 +1,12 @@
+----------------------------- Java 7 features -------------------------------------------
+1) Exception can now be combined whose actions are similar for e.g.
+
+try{
+}
+catch(Exception 1){}
+catch(Exception e){}
+
+can now be written as
+try{
+}
+catch(Exception1 | Exception 2){}

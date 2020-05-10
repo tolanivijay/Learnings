@@ -1,0 +1,106 @@
+In JDK 5, Java has included a feature that simplifies the creation of methods that need to take a variable number of arguments. This feature is called varargs and it is short-form for variable-length arguments. A method that takes a variable number of arguments is a varargs method.
+Prior to JDK 5, variable-length arguments could be handled two ways. One using overloaded method(one for each) and another put the arguments into an array, and then pass this array to the method. Both of them are potentially error-prone and require more code. The varargs feature offers a simpler, better option.
+
+Syntax of varargs :
+A variable-length argument is specified by three periods(…). For Example,
+
+public static void fun(int ... a) 
+{
+   // method body
+} 
+This syntax tells the compiler that fun( ) can be called with zero or more arguments. As a result, here a is implicitly declared as an array of type int[]. Below is a code snippet for illustrating the above concept :
+
+// Java program to demonstrate varargs
+class Test1
+{
+    // A method that takes variable number of intger
+    // arguments.
+    static void fun(int ...a)
+    {
+        System.out.println("Number of arguments: " + a.length);
+
+        // using for each loop to display contents of a
+        for (int i: a)
+            System.out.print(i + " ");
+        System.out.println();
+    }
+
+    // Driver code
+    public static void main(String args[])
+    {
+        // Calling the varargs method with different number
+        // of parameters
+        fun(100);         // one parameter
+        fun(1, 2, 3, 4);  // four parameters
+        fun();            // no parameter
+    }
+}
+Output:
+
+Number of arguments: 1
+100 
+Number of arguments: 4
+1 2 3 4 
+Number of arguments: 0
+Explanation of above program :
+
+The … syntax tells the compiler that varargs has been used and these arguments should be stored in the array referred to by a.
+The variable a is operated on as an array. In this case, we have defined the data type of a as int. So it can take only integer values. The number of arguments can be found out using a.length, the way we find the length of an array in Java.
+Note: A method can have variable length parameters with other parameters too, but one should ensure that there exists only one varargs parameter that should be written last in the parameter list of the method declaration.
+
+ int nums(int a, float b, double … c)
+In this case, the first two arguments are matched with the first two parameters and the remaining arguments belong to c.
+
+// Java program to demonstrate varargs with normal
+// arguments
+class Test2
+{
+    // Takes string as a argument followed by varargs
+    static void fun2(String str, int ...a)
+    {
+        System.out.println("String: " + str);
+        System.out.println("Number of arguments is: "+ a.length);
+
+        // using for each loop to display contents of a
+        for (int i: a)
+            System.out.print(i + " ");
+
+        System.out.println();
+    }
+
+    public static void main(String args[])
+    {
+        // Calling fun2() with different parameter
+        fun2("GeeksforGeeks", 100, 200);
+        fun2("CSPortal", 1, 2, 3, 4, 5);
+        fun2("forGeeks");
+    }
+}
+String: GeeksforGeeks
+Number of arguments is: 2
+100 200 
+String: CSportal
+Number of arguments is: 5
+1 2 3 4 5 
+String: forGeeks
+Number of arguments is: 0
+Important points:
+
+Vararg Methods can also be overloaded but overloading may lead to ambiguity.
+Prior to JDK 5, variable length arguments could be handled into two ways : One was using overloading, other was using array argument.
+There can be only one variable argument in a method.
+Variable argument (varargs) must be the last argument.
+Erroneous varargs Examples
+
+Specifying two varargs in a single method:
+void method(String... gfg, int... q)
+{
+    // Compile time error as there are two
+    // varargs
+}
+Specifying varargs as the first parameter of method instead of last one:
+void method(int... gfg, String q)
+{
+    // Compile time error as vararg appear
+    // before normal argument
+}

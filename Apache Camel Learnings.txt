@@ -1,0 +1,60 @@
+----------------------------------------- Imp Abstractions to Remember ------------------------------
+
+Component And EndPoint : An Endpoint means a location from which a message can be consumed or written.
+For e.g. Consume from 'x' file location and copy it to 'y' MQ.
+
+Here x and y are endpoints where x is of type File and y is of type MQ.
+
+Type in above refers to Component so x corresponds to FileComponent and y corresponds to JMSComponent.
+so file endpoint will be something like file:<file_location>?<options> 
+jms endpoint will be something like jms://<queue_name>
+
+
+Producer and Consumer : A producer as the name suggests is an Entity capable of writing a message to
+a given endpoint.
+
+Consumer means an entity capable to consume from an Endpoint.Consumer consumes from endpoint prepares
+a message and exchange which is then routed according to route definition.
+
+There are broadly 2 consumer types avilable
+1) Event Driven
+2) Polling Consumer
+
+
+------------------------------------------ Imp classes in Camel --------------------------------------
+
+*) Message : This is the main message which is transported through out the routes
+
+Message contains the following
+
+1) Headers : Any key value pairs required for the message
+2) Payload or body : This is the main body
+3) Attachment : Optional attachment <Need to explore more>
+
+
+*) Exchange : This can be said as the message's container which encapsulates Message + some other important objects
+
+ExchangeId : A unique indentifier for this exchange.
+
+Message Exchange Pattern(MEP): It denotes whether the exchange is InOnly or InOut.
+
+InOnly 	: This is used when it is a single direction route (for which no response is expected)
+InOut	: This is used when it is a traditional request-response case 
+	  When InOut, Exchange has a Out object as well.
+	  
+Exception : If any exception during routing,this is populated.
+
+Properties :Similar to Header of message. This should be used to store global-properties(Will add more)
+
+In Message : Mandatory In message.
+
+Out Message : Populated only if MEP = 'InOut'
+
+
+-------------------------------------- Various integration sources -----------------------------------
+* File system
+* MQ and Topics
+* FTP server
+* Web-services
+* E-mail
+* SMS

@@ -1,0 +1,27 @@
+Spring Data Mongodb is an extension of Spring Data which makes perfoming read and write operations very easy and with
+minimal code.
+
+
+
+--------------------------------------- Imp Learnings ----------------------------------------------------
+Issue : Even after implementing MongoRepository and registering it as a dependency in the service layer, somehow
+	this bean was not initialized and would fail while startup as the app was not able to autowire it in
+	service layer.
+Fix :	@EnableMongoRepositories(basePackageClasses=EmpRepository.class)
+
+
+
+
+
+
+
+
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------------
+
+
+
+

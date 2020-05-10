@@ -1,0 +1,26 @@
+Web-Service: As the name suggests, any service that is hosted over web is termed as Web-service.
+Advantages of Web-services is that it exposes a functionality over a network which could be called
+by any platform irrespective of the language it was writtern and the consumer understands that language.
+So any .net or any other application can call a web-service written in java.
+
+SOAP (Simple Object Access protocol) is a more traditional type of Webservice and is also pretty much
+complicated and heavy as compared to REST types.Below are the few things which needs to be understand for
+using SOAP based services.
+
+WSDL(Web Service Definition Language): As the name suggests it defines the contract for the web-service.
+So in general, what are the various parameters the service takes and what output is returned out of the
+service is defined over there.
+
+UDDI (Univeral Description Discovery and Integration): It is like yellow pages for Web-service.
+Any consumer who wants to find a Web-service needs to access UDDI , from which it gets to find a 
+Web-service. (Need to understand more here)
+
+SOAP: SOAP is a xml format message which is used as the input to the web-service.So a client
+creates a SOAP message which has details of what input it is providing and this SOAP message is 
+then sent out to the actual Web-service as an entry point. We need SOAP as communication channel
+as it is xml format and hence platform independent considering all languages pretty much understand
+xmls.
+
+----------------------- Generating Stub's given a WSDL------------------------------------------
+
+wsimport which comes to standard java kit can generate the stubs for us given a WSDL

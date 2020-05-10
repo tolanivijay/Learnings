@@ -1,0 +1,188 @@
+What is a storm cluster ?
+
+A Storm cluster typically has the following components.
+1)	Nimbus 	:
+	Consider his as a master process which controlls the complete functioning of a cluster.
+	Nimbus is stateless and will store all the information required in zookeeper.Nimbus can also be distributed across
+	multiple nodes and one of them is primary and the rest are secondary, so if the primary goes down, one of the 
+	secondary is chosen as leader, so smooth operations. If all nodes of nimbus dies then all the submitted jobs still
+	will keep running and new jobs wont be accepted.
+	
+2)	Zookeeper :
+	This is a watcher program which knows about all the components on the cluster, so that if a particular component
+	dies or is not functioning, the processing is redirected to other working component.
+	Zookeeper will run on all the nodes (machines) of the cluster, as it has to track health of all the nodes.
+	Zookeeper can also be termed as a registry programme which maintains the complete state of the cluster. Both the
+	Nimbus and Supervisor nodes talk to Zookeeper and maintains all the state there.
+	
+3)	SuperVisor :
+	SuperVisor is nothing but a physical node on the cluster. Think we can have multiple supervisor on the same machine
+	by specifying different ports, though this setup has to be tried.Think supervisor as the king of the physical machine
+	who would make all the decissions for the machine like how many worker JVM's are required and killing not required
+	ones.Each Supervisor will have a supervisor daemon who will take all these decissions.
+	
+
+4)	Workers :
+	Worker is nothing but a JVM process.A cluster can have n supervisors (nodes). Each of this supervisor nodes can have
+	n number of JVM processes (workers).A worker is dedicated for a given topology. So there will never be a case where
+	the same worker process is shared by 2 Topologies.
+
+5)	Executors :
+	Executors are the worker threads inside a given worker(JVM).This thread is assigned a given task of spout,boult etc
+	and all it does is complete the task assigned to it.Storm allows changing the number of executors dynamically.
+
+6) 	Task :
+	A task is nothing but an instance of spout or boult.
+
+7)	Parallism : 	
+	Parallism means the amount of parallel processing that we can achieve inside a given topology. Fundamentally we have
+	the following levels of parallel processing that we can achieve for a given java process.
+
+	1) Run the same java process on multiple machines.
+	2) Run multiple instances of the java process on the same machine.
+	3) Convert your task in smaller chunks and run each chunk on multiple threads.
+
+	Parallism can be thought as a permutation and combination of the above 3 cases. So 
+	1) above means increasing supervisors.
+	2) above means increasing workers.
+	3) above means increasing executors.
+
+	When we define a Topology,we specify which spout or boult will run with how many executors and how many workers.
+
+	So, builder.setSpout("SampleSpout", new SampleSpout(),2);
+	means we want 2 executors Threads for SampleSpout(). By default storm will create as many tasks (instances) as well.
+	So effectively we will have 2 instances of SampleSpout and 2 executor threads who get their individual SampleSpout instances.
+
+	and, builder.setSpout("SampleSpout", new SampleSpout(), 2).setNumTasks(4);
+	means we will have 2 executor threads and 4 instances of SampleSpout		-----> Need to check how is this useful.
+
+	Also we can define number of workers at config level
+	
+	Config conf = new Config(); 
+	conf.setNumWorkers(3);
+
+8)	Cluster modes :
+	We can have local as well as normal cluster mode. Local is more for local coding and testing and normal mode would be
+	for any production like parallelism.For local mode, we will never have multiple workers, only executors and tasks can be multiple.
+	
+	
+------------------------------ Spout, Boult, Tuples and streams important classes ----------------------------------------------------------
+Spout:
+A spout is the starting point for any Topology. A spout typically represents fetching data from input streams which can be
+processed by the system. For e.g. Fetching messages from a queue or Kafka topic, or randomly generating numbers for testing.
+
+Boult:
+Boult is nothing but a processing unit where data is processed.For e.g. a program which takes a employee object and enhances 
+certain attributes on the object and then sends it further for any other processing.
+
+Tuples:
+Tuple is the basic unit which is transfered between spouts or bolts. This is a interface which contains data sent between streams.
+
+Stream:
+Stream is nothing but a continous flow of Tuples.
+
+Topology:
+Topology is nothing but our defination about how the data would flow between spouts and boults, say if our problem statement is
+fetching messages from a queue, filtering them based on a criteria and persist the rest of the messages. So we will typically 
+break this down into spouts and boults like below
+
+Input Spout: 
+This program will read continously from a queue.
+
+Filter Boult: 
+This program will get input messages and it would apply filter criteria and send only the elligible candidates
+
+Persist Boult:
+This program simply persists the messages which it receives.
+
+Our Topology in this case will flow data from Input Spout --> Filter Boult --> Persist Boult.
+
+So Topology can be thought like a configuration which would define how the data flows. Also it can define how do we want
+to define parallism in respective components, say in this case we may feel Persist Boult can be a bottleneck from
+performance perspective as it involves talking to DB, so in our topology we may want to create 2 or more instances 
+of Persist Boult (Tasks) and may also increase the number of threads operating on the tasks (Executors)
+
+Grouping:
+Since we can have parallelism between components (Spouts and Boults) where in there might be unequal number of instances
+at each level of components for e.g. in case above we will have multiple instances of Persist Bolt.So we need to define our
+stratergy how to partition data flow between components , say we want data should be partitioned based on a given field say
+empName and we want all Employee objects having same name to go to a particular Persist Boult, so we define Field grouping
+between Filter Boult and Persist Boult.
+
+Input Spout --> Filter Boult: 
+As we dont any requirement for any order, so we define shuffleGrouping which means random distribution.ShuffleGrouping is the
+most common grouping.
+
+Filter Boult --> Persist Boult:
+Here we can use shuffleGrouping as well or if we want grouping based on name then we can use FieldGrouping.
+
+
+DAGs and Apache storm:
+Apache storm is based on DAGs (data structure) which means the flow is one dimensional i.e. data will flow from say below
+Input Spout --> Boult 1 --> Boult 2.
+Here there is no way on the path where you can reach Boult 1 or Input spout if you have already reache Boult2.
+
+Ack and Fail Mechanism:
+Say our Topology is defined as below, and we get some exception at Persist Boult, which means the employee would not be persisted.
+So in this case we may want to retry the whole message starting from Input Spout. If such is our requirement, then we can simply
+catch the exception and then call fail on the outputcollector. On calling fail Input Spout's fail method is called where we can
+write logic to retry this message.Similarly we can also ack the message on the boult to call ack method on the spout to notify all went
+well with the message.
+
+Input Spout --> Filter Boult --> Persist Boult.
+
+Few important things to remember.
+
+Fail or Ack is triggered on the outputCollector by a boult.
+Fail and Ack method is called at the spout.
+Storm will not do anything to replay the message or take any action, we will have to code for it.
+Fail or Ack is called on spout only if the Tuple is anchored.
+Anchored means the below
+	Spout to Boult is anchored only if spout gives a unique messageId to the tuple.
+	Boult to Boult is anchored only if Boult's calls ack or fail in execute method (BaseRichBolt)
+	Boult to Boutt is anchroed if execute method is completed (BaseBasicBolt).
+	BaseBasicBolt will automatically call ack method on execute method completion but we have to explicitly call the method
+	on BaseRichBolt.
+	We can never be able to call fail method on BaseBasicBolt   ------> Need to check this.
+	
+	
+Exception Handling:
+If any exception happens on any spout or boult, storm will kill the worker (JVM) and try and restart it on any other node.
+This is a tricky situation as it seems all uncaught exceptions will be retried again and again, not sure if we have any
+parameter where we can specify number of retries for above case.
+So if any exception on local cluster, the whole program dies since Local Cluster is single JVM.
+
+--------------- To be checked later ------------
+
+
+Message_id of a tuple. If provided then, spout is notified when tuple is processed at boult.
+
+If a spout wants to emit data to more than one stream, 
+it can declare multiple streams using the declareStream method and specify a stream ID while emitting the tuple --> Need to check this.
+
+Another point to note while writing your spout is that none of the methods should be blocking, 
+as Storm calls all the methods in the same thread. Every spout has an internal buffer to keep track of the status of the tuples emitted so far.
+The spout will keep the tuples in this buffer until they are either acknowledged or failed, calling the ack or fail method, respectively. 
+Storm will call the nextTuple method only when this buffer is not full.   --> Need to check this.
+
+If a message ID is associated with a tuple, the execute method must publish an ack or fail event using OutputCollector for the bolt, 
+or else Storm will not know whether the tuple was processed successfully. The org.apache.storm.topology.IBasicBolt interface is a convenient interface 
+that sends an acknowledgement automatically after the completion of the execute method. 
+If a fail event is to be sent, this method should throw org.apache.storm.topology.FailedException.
+
+prepare(Map stormConf, TopologyContext context, OutputCollector collector): A bolt can be executed by multiple workers in a Storm topology.
+The instance of a bolt is created on the client machine and then serialized and submitted to Nimbus. 
+When Nimbus creates the worker instances for the topology, it sends this serialized bolt to the workers. 
+The work will desterilize the bolt and call the prepare method. In this method, you should make sure the bolt is properly configured to execute tuples. 
+Any state that you want to maintain can be stored as instance variables for the bolt that can be serialized/deserialized later.
+
+
+---------------- Cause & resolutions ---------------------
+
+In storm if any component i.e. Spout or Boult if it is emitting any stream it is necessary to override
+public void declareOutputFields(OutputFieldsDeclarer declarer) method, else we would face InvalidTopologyException
+while submitting the topology.
+
+	
+
+Storm UI

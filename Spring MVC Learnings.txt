@@ -1,0 +1,180 @@
+ --------------------------------------------- Controllers -----------------------------------------------
+Heart of Spring MVC is controllers, the smallest of MVC app has to have a controller. A controller will be the
+central point of handling requests, so if an app has 2 service patterns say 'employee' and 'student', we will have
+2 controllers as below. In below case we have 3 endpoints 2 for employee and 1 for student, however there would be 2
+controllers.
+
+	\employee\get
+	\employee\update
+	\student\list
+
+@Controller 	- If the controller is not restful i.e. it has to rendor a view for JSP/HTML etc.
+@RestController - This is a convinience annotation which can be used specifically for restful service.
+
+----------------------------------------------Components Vs Beans ------------------------
+Both components & beans are registered in the context however there are a few differences.
+
+Components is applible to Type (possibly at class level, need to check) where as Bean is applicable only to methods.
+So for e.g. We want to dynamically register a bean at runtime based on some value, we can use Bean.
+
+Components are auto-detected by the system where Beans needs to be defined.
+
+@Bean
+public Vehicle getVehicle(){
+if (type ='car')
+	return new Car()
+if (type='bus')
+	return new Bus()
+}
+
+Bean	:	It can only be used with Configuration annotation ---> ?
+
+
+
+@Components : 	Below are all types specific types of Components.
+		
+	@Controller	: 	This is central point for requests.
+	@Repository	: 	Any touch point to Data persistence (Data Access Object- DAO) should be defined as @Repository.
+				It also provides functinality to encapsulate DAO's unchecked expections into special objects.
+				<Need to try this with example>				
+	@Service	:	This should represent any business service 
+
+Though Technically there is not much functional difference to @Component,@Repository or @Service, as per good practices
+we should tag components correctly.
+
+-----------------------------------------------Actuator endpoints (Need to check) -------------------------------------------
+It shows us all meta abouts Beans i.e. Scope etc.
+
+If I run this project now and pull up the /beans actuator endpoint I will see these classes registered in the application context. 
+
+
+---------------------------------- RequestMapping and its types ----------------------------------
+
+RequestMapping as we know can be used to map a class or method to a specific url pattern. There are specific convenience methods for
+each method types like Get,Post,delete etc.
+Like in below, both of the below can be used to map a url pattern and get method
+
+//@RequestMapping(path="entity/all", method=RequestMethod.GET)
+@GetMapping(path ="entity/all") 
+
+
+--------------------------------------@RequestBody, @ResponseBody----------------------------------------------------------------------
+If we want an external service (Typically UI will do it) send us a complete JSON object,we can annotate the parameter on the method 
+on controller as @RequestBody and Spring will itself convert the JSON to object and pass it to the method.
+
+public EmpResponse upsurdAnEmployee(@RequestBody Employee emp) {}
+
+@ResponseBody as specified in the documentation should be used if a method is returning a JSON object i.e. a java POJO which
+can will be automatically be converted into JSON, however it works even without specifying. 
+
+
+----------------------------------------------------------------------------
+Need to check: 
+
+1) As per documentation DS will always try to find DS's servlet-name for context init
+of spring beans. for e.g. in below example 
+
+<servlet-name>HelloWeb</servlet-name>
+
+so it will try and find HelloWeb-servlet.xml. if the above needs to be over-ridden and we need custom name for the
+context file then it could be done via providing the below in the web.xml
+
+<context-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>/WEB-INF/HelloWebContext.xml</param-value>
+   </context-param>
+
+   <listener>
+      <listener-class>
+         org.springframework.web.context.ContextLoaderListener
+      </listener-class>
+   </listener>
+
+When tried it does not work. Need to check on the same.
+
+2) Need to understand more about HTTPMessageConverter below.
+--------------------------------------------------------------------------------------------
+The most important aspect about Spring MVC is the starting point of the same.
+DispatcherServlet(org.springframework.web.servlet.DispatcherServlet) is the imp class name which serves as the 
+starting point for Spring MVC based apps. 
+
+DispatcherServlet : This is both the first and the last part of external interaction i.e. all requests are first
+intercepted by DS and then it tries to find the respective Controllers and sends the request to them. The controllers
+then perform business logic and sends the view back. This response is once again intercepted by DS who tries to map
+respective view w.r.t the response.
+
+Below mapping in web.xml will always redirect all requests to DS and it is an essential piece.
+
+<servlet>
+      <servlet-name>HelloWeb</servlet-name>
+      <servlet-class>
+         org.springframework.web.servlet.DispatcherServlet
+      </servlet-class>
+      <load-on-startup>1</load-on-startup>
+   </servlet>
+
+   <servlet-mapping>
+      <servlet-name>HelloWeb</servlet-name>
+      <url-pattern>/*</url-pattern>
+   </servlet-mapping>
+
+--------------------------------------------------------------------------------------------
+Imp tags/Annotations:
+
+There are a few imp tags/annotations which is required to be known.
+						Before Spring 4
+---------------------------------------------------------------------------------------------------------------
+
+1) <context:component-scan> : This is required to be present in the spring context file and is mainly responsible for
+ loading all the spring annotations. If this is not specified then Annotations like @Controller etc will not be recognised.
+
+2) @Controller : This annotation is applicable on a class and would represent the Controller. In case of Rest services, this is
+ mostly applied with @RequestMapping(value="/hello") annotation. In this case it means our class will be a controller and would
+be the single point for any request with /hello, we can has specific methods with mapped requestmappings 
+for /hello/get or /hello/list
+
+@RequestMapping(value="/get", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+	//@ResponseBody
+	public  String printHello() {
+		return "hello";
+	}
+	
+	@RequestMapping(value="/getEmp", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+	public Employee getEmp() {
+		return new Employee(1,"vijay");
+	}
+
+3) If we want to design a restful service which is expected to return JSON, then produces(in RequestMapping) 
+   should supply respective MIME type (i.e "application/json")
+
+4) <mvc:annotation-driven/> : This tag is required to be supplied if our JSON is to be automatically to be handled by Jackson API.
+Note in this case, we should have Jackson api to be on the classpath
+
+<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.7.5</version>
+		</dependency>
+
+5) @ResponseBody : This is very important to understand that spring uses this annotation to understand that the response of the class has to be handled
+in a special way. Special way here means that Spring maintains a list of Mime type vs API to be picked, so for e.g. if Jackson is on the classpath
+and <mvc:annotation-driven/> is specified then, it would create a mapping of JSON vs Jackson, and once it finds that the given class is annoted for special
+handling then it would loop through this list and try and find the respective API and pass the response object to it and then write the stream from this API
+directly to Http response. This mapping is called HTTPMessageConverter
+
+So in summary if we have to write a class which produces JSON out of java class then the following needs to be done.
+
+1) Enable annotations via <context:component-scan>
+2) Include jackson API on the classpath 
+3) Include <mvc:annotation-driven/>, so that HTTPMessageConverter is created for JSON vs Jackson.
+4) Create a class annotated by @Controller and @ResponseBody, so that it serves as a controller and enables for special handling.
+5) Enable this class to handle specific url pattern like /hello via @RequestMapping annotation
+6) Write a method with specific url pattern and specifying its mime type is JSON via produces = MediaType.APPLICATION_JSON_VALUE.
+
+							After Spring 4
+---------------------------------------------------------------------------------------------------------------
+
+4) Can be combined in a single annotation i.e. @RestController which will do both of @Controller and @ResponseBody
+
+
+

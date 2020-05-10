@@ -1,0 +1,50 @@
+Garbage Collection or GC is a JVM algorithm which runs periodically and tries to 
+free non-referenced objects in a heap.
+
+When a JVM starts it creates 2 sections in memory 1) Heap 2) Stack
+
+Heap: All java objects or primitives instance variables live in a heap.This 
+can be said as a main memory and the OutOfMemory Error refers to the size on the heap.
+
+Stack : Stack is for method execution and any local references.
+
+
+public class TestGC{
+
+	Integer intObject;
+	int intPrimitive
+	
+	public TestGC(Integer obj,int prim){
+		this.intObject=obj;
+		this.intPrimitive=prim;
+	}
+
+	public static void main(String[] args){
+		TestGC	gc1 = new TestGC(new Integer(1),1);
+		TestGC	gc2 = new TestGC(new Integer(2),2);
+	
+		tempMethod(gc2);
+	}
+	
+	public static tempMethod(TestGC testGC){
+		testGC =null;
+
+	}
+}
+
+Heap:
+-------------------------------
+100x : TestGC (intObject = 200x,intPrimitive= 300x)
+200x : Integer (1)
+300x : int (1)
+400x : TestGC intObject = 500x,intPrimitive= 600x)
+500x : Integer(2)
+600x: int (2)
+
+mainStack
+---------------------
+gc1: 100x
+gc2: 400x
+
+As in the above program before calling tempMethod all the 6 objects in heap are referenced from main
+stack,but after calling the method gc2 is nullified ,so 400x,500x,600x are now elligible for GC.

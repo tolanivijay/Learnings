@@ -1,0 +1,66 @@
+Different Asset Classes
+
+Fixed Income (FI) :
+	As the name says these types of instruments provide a fixed Income which is decided
+	at the start of the tenure. Many comapanies and govt themselves need money to run
+	for various reasons. To raised money, they issue Debt instruments i.e. cooperate bond
+	or Govt bonds which provide a fixed yield based on tenure. for e.g. it may take x Rs
+	and provide 6% income per year for a period of 5 years. For e.g. FD's
+
+	Debt : FI instruments are generally called Debt because the comapany/govt is in-debted
+	to provide you the said returns.
+	
+	
+Money Markets (MM) : 
+	Money Markets typicallys means Loans and Deposits.
+	We all take loans(Home Loans) and do deposits(Fixed Deposits) from various banks.
+	Both Fixed income and Money Markets are similar, however the major difference is 
+	tenure. Tenure for MM is generally much smaller than the Fixed income instruments. 
+	That is the reason MM are considered more safe than FI's however may not provide
+	returns as much as a FI security.	
+		
+		
+Equities : 
+	Very common of the lot. Shares issued by comapanies i.e. Reliance,TCS e.t.c which
+	are traded in the market.
+
+
+
+-------------------------------------------------------------------------------------
+
+Derivatives : 
+		Derivatives is a Contract between 2 parties which value derives from the
+		underlying asset. As the name says Derivatives which means the value is always
+		DERIVED (from the underlying asset). 
+		For e.g. a Contract between 2 parties that Party A will Purchase 100 IBM shares
+		from Party B after 1 month at a price of Rs 200 per share.
+		In this example 2 parties are getting into an agreement and as we can see the
+		underlying asset class is equity (IBM).
+
+
+Types of Derivatives :
+		OPTIONS (Put/Call):
+		
+		Option is a contract between 2 parties (as it is a derivate) in which one of the
+		party has an OPTION to exercise a contract against a said premium. For e.g.
+
+		Party A & B get into a contract that A will buy 100 IBM shares from B after 
+		a month for the price of Rs 200 per share.
+		Above is a contract which Party A is buying from Party B at a premium of Rs 50.
+		In technical terms it means Party A is buying a PUT Option from Party B at a 
+		premium of Rs 50.
+		PUT Option because Party A here is agreeing to Sell (or Put) his shares.
+		Now why is Party A paying premium of Rs 50 ? This is because it then gives him
+		the right to execise or execute the order or not materilize the contract at maturity.
+
+		If the current price of share is 180 Rs and Party A feels it will go up from this level
+		after a month, it would typically get into a OPTIONS contract because if the price
+		goes down say to 170 it will not sell it and bear the brunt of Rs 50 (premium).
+
+		Also if in the above example if Party A was buying from Party B, then it would had been
+		a CALL OPTION. i.e. Party A sells Call Option to Party B.
+
+Types of OPTIONS :
+		Vanilla :		
+			
+		

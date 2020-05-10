@@ -1,0 +1,31 @@
+Shell : Shell is nothing but an program which allows to start other programs.
+	For e.g. command prompt on DOS. Windows explorer on Windows and 
+	shell prompt on unix.
+	
+chmod +x <script_name> makes a script executable.
+
+------------------------ Scripting basics ------------------------
+
+.. '>' is used to redirect the output of any command onto a file.
+    for e.g. less <file_name> > <new file_name>.
+    This command copies all the contents of the current file to a new file.
+    
+    Any command that we run can have errors ,if we have to list down the errors out of 
+    a script,we can use >2 for e.g. in below case all results are written to results file
+    and errors are written to errors file.
+    
+    find -name abc.txt > results >2 errors
+    
+.. '>>' is used to redirect output of any command to end of an existing file.
+
+
+.. '|' is used to conjuncate two commands, the first which is producing a result
+   and second which is expecting any input, so the results of first command are
+   redirected as input to the second command.
+   
+.. '&' is used to perform a given task asyncronously. for e.g. sleep 100 makes a program
+	sleep for 100 secs,if i do sleep &, it spawns a new process and perfoms the task
+	in that process,and the next command in the script executes instantly.
+	
+	
+	

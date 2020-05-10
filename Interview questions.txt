@@ -1,0 +1,192 @@
+
+Amdocs written test:
+1) Write a program for ATM notes retrival system which takes of below
+   a) It always ensures the least number of notes disbursed based on amount
+   b) Handle concurrency
+   c) It sends information regarding the denomiation and no of notes(for e.g 500*1+100*2 = 700)
+   
+2) What is the use of version in Hibernate/JPA. Give example
+3) Given a connectionPool class ,extend the class to give info if there is any connectionLeak
+4) static method of collection which takes a Collection and returns a SyncCollection.How would u implement
+   such a thing ?
+   
+   
+Citi Telephonic
+
+1) How to avoid data race without locking ?
+2) How to programatically detect deadlock ?
+3) What is optimistic and passimistic locking ?
+4) Considering a Map of String vs Integer,where Integer is updated a good number of times,
+   how would u design to fetch best performance.
+
+-----------------------------------------------------------------------
+
+Numora (Round 1)
+
+1) Considering there can be n number of multiple requests on a servlet, will this not cause an issue ?
+    for e.g. 100000 simultaneous requests can cause issues,how can we control it ?
+2) 
+
+
+
+(Round 2)
+1) On a 32 bit JVM, how will you deal with OutofMemoryError.
+   i.e. if you face OfMError, what we do about it ? How much RAM would you increase ?
+   have you ever seen GC Logs to check memory ?
+2) Questions around immutable class.
+3) If a response is around 500 MB, how would u design an application if there are 
+   10 simultaneous requests on the same node.
+   We need to even consider all 10 requests should not suffer time lag.Once again
+   consider 32 bit JVM.
+4) What do you prefer is a better response structure xml or json? 
+5) Explan Java GC
+5) 
+   
+
+
+
+
+
+(Need to check memory considerations on a 32 bit JVM)
+
+---------------------------------------------------------------------------------------------------------
+Citi Telephonic (2nd)
+
+What is class loader.
+What class loader does spring use.
+What is database partioning.
+What are materialized views.
+How does class loader work ?
+if i have 2 classes with same package structure and name in JVM i.e. one from a jar
+and one in my project what would happen ?
+What are the different ways to instantiate a class ?
+	new
+	Serialization
+	clone
+	Class-Loader ?
+What is 2 phase commit ?
+How to have a transaction around 2 tables in different databases.
+
+----------------------- Questions by Avdhesh -----------------------------------------------
+
+Questions by avdhesh
+1) Producer consumer
+2) implementation of map
+3) Does multi-threading help in a single core CPU ?
+4) Executor framework
+
+-----------------------------Deutche (2015) -----------------------------------------------
+
+1)MV,updating views
+2)How can we use 2 stacks and convert into a queue
+3)nth highest marks
+4)clustered and non-clustered index
+5)class diagram for Decorator pattern
+6)Design principles
+7)CopyonWriteArrayList
+
+------------------------------Deutche (Aug 2018) -----------------------------------------------
+
+Written Problems:
+1) 	Write a program for connection pool, where initially we would have 10 connections, it should have
+	API for fetch and release connection where the fetch should wait for 1 min or else return if the
+	pool is occupied.
+	
+2)	Write a batch process which does the below
+			Connects to database and fetches search strings and search folders 
+			Searches all the files present in the list of folders for all the strings supplied.
+			The process has to be multi-threaded i.e. it should start with 5 threads, each searching on
+			seperate files.
+
+3)	Implement a trade store which receives loads of files from upstream and store them in the given format
+
+	Trade Id	Trade version	Cntr Party Id		Book Id			Trade date		
+
+		Some validations and enrichments.
+		
+4) 	Write a program which will create deadlock.
+	Implment a program with Optimistic lock and handle case when the optimistic condition is not correct.
+
+
+Ist Round
+	Implement a ArrayList
+	When objects are passed, is it passed by value or pass by reference.
+	Write a program which has 2 threads each printing even and odd numbers but the sequence of print should be
+	correct i.e. 1,2,3,4,5........
+	2nd highest marks.
+	Difference between a primary and unique key.
+	
+
+2nd Round
+	In concurrentHashMap will the size() method be thread-safe ? if not how is thread-safety managed ?	
+	Explain GC. Minor GC, Major GC. Different GC's and which is the default one.
+	Explain JVM architecture
+	How is CopyonWriteArrayList thread-safe ?
+	Draw class diagram for Abstract Factory and which api is an example of abstract factory.
+	What are hints in DB ? Have you seen query-plan ?
+	Internals of HashMap
+	What is thread local ?
+	Ever faced a very tricky situation like deadlock ?
+	
+Questions to other candidates.
+	What is heapdump and thread dump and which are the tools you have used.
+	A race has 10 participats, implement this. Point to note is that all these participats should run only
+	when exactly 10 people have joined the race.
+	Implement an elevator system
+	Implement a trafic signal.
+		
+------------------------------Barclay (Sept 2018) -----------------------------------------------
+
+Telephonic
+
+	Implement Connection pool
+	How would you implement bitly i.e. mapping 4 char string to a physical URL.
+	Implement a cache, how would you set expiry for each element (there is some implementation in Executor Pool)
+	What is G1 garbage collector, and how would we change a garbage collector policy.
+	Question on fetching highest salary and dept name for each dept. i.e. group by query.
+	Analyzing thread dump (i.e. which tools to use)
+	Questions around load balancer, which all load balancers have you used.
+	What is Reentrant lock
+	Difference between countDownLatch & cyclic barrier.
+	Differnce between Collections.synchornizedMap vs ConcurrentHashMap.
+	
+	
+----------------------------- Wells Fargo (Dec 2018)    ---------------------------------------	
+
+Telephonic
+	How do you write a custom logic for a cache which has expiry set for the elements.
+	Given a big list of Integers, what is the best way to sum it up.
+	
+
+---------------------------- UBS (JAN 2019) ------------------------------------------
+
+First Round
+	Given a file of 10 GB, how do you read, process and perform operations on the file, condition is
+	we have a single JVM with 128 MB of RAM.
+	Having a big xml, how do you process it once again on a single JVM of 128 MB of RAM.
+	Where does kafka store messages ? is it zookeeper or where ?
+
+
+Second Round
+	When you provide @Transactional annotation, what does spring do to make the method transactional
+	Which transaction manager was used in @Transactional ?
+	How do you identify a circle in a linkedList i.e. if 1-2-1 elements are added, how to identify it.
+	Given an array of 1's and 0's how to have list where all 0's sit at top and 1's sit at the bottom.
+	What is loadfactor in a HashMap and what is rehashing.
+	How in a query do you get both minmum and maximum salary in the same query.
+	What is timeToLive and flushToDisk properties in ehcache.
+
+Third Round
+	How does Spring detect autoconfigurations i.e. we just provide dependencies, but spring does auto-config how ?
+	If parent class is not searalized and child class is, what happens about properties from parent class
+	Are they transferred ?
+	How about static properties of a class during serailization ?
+	What is global server load balancing vs local server load balancing.
+	If a service has DAO, how can i dynamically pass DAO to the service layer, so that i get user specific
+	DAO each time.
+	For e.g., i have 5 users and i prepare 5 Datasource w.r.t each user, now depending upon the user making
+	the request, respective DAO is used in the service layer.
+	If we have a slow service or a service which is down which is dependency on my exposed service,how
+	can i design an app considering i have lot of hits on my given service.
+	 
+	

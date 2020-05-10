@@ -1,0 +1,46 @@
+@SpringBootApplication : This is the main annotation which is to be used to enable a application as Spring boot.
+It is a convinience annotation which would automatically enable the below.
+
+1) @Configuration :  tags the class as a source of bean definitions for the application context.
+
+2) @EnableAutoConfiguration :  tells Spring Boot to start adding beans based on classpath settings, 
+			    other beans, and various property settings.
+
+3) @EnableWebMvc : Normally you would add @EnableWebMvc for a Spring MVC app,
+		   but Spring Boot adds it automatically when it sees spring-webmvc on the classpath. 
+		   This flags the application as a web application and activates key behaviors 
+		   such as setting up a DispatcherServlet.
+
+@ComponentScan by default takes the current class and registers all of the below in the app on its classpath.
+	@Component
+		@Repository 
+		@Service
+ 		@Controller
+	@Configuration
+	
+
+Also it would try and autowire any of the beans defined by @AutoWire Annotation
+Also if the basePackage can be configured using scanBasePackages attribute on the annotation
+
+-------------------------------------------------------------------------------------------------------
+
+@Value : This annotation can be used to inject value from application.properties. So for e.g. in below case
+	 name is defined in application.properties which is used to inject into this variable.
+	 This annotation also supports SPEL
+
+	@Value("${name}")
+	private String name; 
+
+------------------------------------------- CommandLineRunner --------------------------------------------
+
+CommandLineRunner is a functional interface which if implemented and registered would be called only once 
+during SpringBoot's lifetime i.e. when the Spring boot initilization has completed. It can be used to write
+a 'Application Started' log to indicate that the all the initialization has completed. In one of the examples
+it was used to print all the beans initialized by the app.
+
+------------------------------ SpringBootServletInitializer ------------------------------
+SpringBootServletInitializer is an abstract class which can be used majorly when one wants to convert the spring boot instance into
+a War which can be deployed to an external container.
+
+
+

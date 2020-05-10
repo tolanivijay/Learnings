@@ -1,0 +1,99 @@
+Big Data def: 
+It is the amount of data that is so big that it cannot be stored on a single computer.
+For e.g. each single trade session has NSE has trade data in GB's.
+
+4 V's of Big Data:
+1) Volume : As the term big data says, its big or huge data. One aspect of Big is volume.
+	Each organization today has so much data i.e. data about its employees,partners,customers
+	that lot of mid sized organizations had data in TB's (1024 GB= 1TB).
+	
+2) Variety : With the advent of social media and other drivers, the variety of data is only increasing.
+		Data like videos,audios,tweets etc are common and few new types trending.
+		
+3) Velocity: Velocity here refers to the speed at which data is generated these days.
+		Every minute 100 of videos are uploaded on you-tube,the number of tweets or
+		facebook posts generated is also a good measure of the speed at which this
+		data is generated.
+		
+4) Veracity: This refers to the un-certainity of the data.For e.g. if i would have to write
+		a tool which gives me a count of 'Good morning' post on facebook. Now 'Good morning'
+		can be expressed in n number of ways for e.g.'GM' or 'Gd mning' and many more.
+		So the same sentiment is expressed in many different ways.
+
+
+Data Storage structures :
+However there can be n number of combinations, but widely below are Data storage structures.
+
+1) Structed data : Data stored in RDBMS is an example of structured data, where data is properly
+			structed and represented.
+			
+2) Non-structed data : Data in form of videos,audios etc is a form of non-structed data which cannot be
+			represented in rows and columns.
+			
+3) Semi-structed data : JSON is a perfect example of Semi structed where each json structure can represent a complete
+			record with all dependencies. For e.g. 
+			Below is a example of JSON which represents a type 'Employee'.As we can see
+			it is similar to how Employee would be represented in a POJO. Here the complete
+			employee structure is stored as one json and not represented in conventional
+			name,value pair
+{
+	"name": "Vijay"
+	"age": 35
+	"adddresses":
+	{
+		"type" : "home"
+		"city" : "pune",
+		"postcode" : 4000026
+	},
+	{
+			"type" : "office"
+			"city" : "pune",
+			"postcode" : 4000026
+	}
+}
+
+Types of NoSQL DB's
+
+1) Key-Value Store 	: Redis
+2) Wide-Column Store	: Cassandra
+3) Graph Store		: Neo4J
+4) Document Store	: MongoDB
+
+
+MongoDB: MongoBD is a Document Store database, where all information is stored in a form of Documents or JSON structure.
+	 Mongo is a schema-less store,where unlike tradional RDBMS,we dont need to prefine schema to store data. So for
+	 use cases where the schema changes rapidly,MongoDB is the ideal choice.
+	 
+Collections: Collections are analogous to a Table in RDBMS.
+Document : Document is like a row in Collections.As mentioned it is in form of Json which can be changed.
+		The max size of a document allowed is 16 MB.If one has to store a document which is more than this
+		permissible limit,it is possible via Grid(Need to know more on this)
+		
+
+Features of MongoDB
+
+1) Auto sharding : sharding means splitting and storing of data across machines.For e.g. a collection which has 1000
+			documents which have total size of 10 GB, which is beyond the current system's capacity.
+			So auto-sharding will ensure that the documents are split across machines and the user 
+			does not need to take care of the same.Even though the data is stored across machines, still
+			it can be queired af it all the data is on the same system. So,in general MongoDB is able
+			to logically bind documents in one collections which are stored across systems.
+			One thing to keep in mind is auto-sharding should be enabled before the collection size
+			reaches 256 GB(Need to know more on this)
+
+
+2) Replication and high availability : Mongo provides replication to multiple servers,which can server 2 purposes
+					a) In case of central server crash,the replicated servers come into picture
+						and makes the data available. If replication is not there, data is
+						completely unavailable and it can affect in a big way.
+					b) In case of regional reads, the reads can be done on regional servers
+						and not the central server,which would mean much faster response
+						time as we are avoiding network time.
+
+
+-------------------------------------------------------------------------------------------
+
+
+Things to understand later
+		
+1) What is aggregation in MongoDB ?

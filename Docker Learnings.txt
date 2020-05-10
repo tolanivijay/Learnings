@@ -1,0 +1,253 @@
+------------  			Basics -----------------
+Virtaualization has to be enabled for Docker to run. 
+For windows, it is shown at Task Manager --> Performance --> Virtaualization
+
+When we do docker verion, we get to see version for both client and server. So what is client and 
+what is server. Server is always linux and client is Windows. Need to understand a bit more here.
+
+Docker is a client-server architecture, so when we install docker we are installing a client-server
+which communicates with the server (hub.docker.com). This communication is required for cases where
+we want to pull or push images.
+
+
+Web-service : If we run 2 docker containers of tomcat on port 8080, it works without any issue. How ?
+			  How can 2 services run on same port ? This is because docker uses 2 different IP's for
+			  launching these containers but uses the port 8080. By default Tomcat hosts on local 
+				machine runs on localhost which resolves to a specific IP, but in this case as the 
+				Ip's are different, it is able to launch it.
+				We can use docker inspect <container_id> to check metadata respective to the container
+				including the IP and port.
+
+--------------------- 		Basics -------------------
+	Each docker container has a container id and image id. What is the difference between them ? Need to check
+	Each docker image needs a port to run ? Is it ? because when we run tomcat image we specify both the ports
+	i.e. port of docker and port of Tomcat.
+	
+--------- Commands ----
+To see docker installation meta-data
+	docker info 
+	
+To see docker version
+	docker version
+
+To see all the images i have
+	docker images
+
+To pull a docker image on local
+	docker pull <image_name>
+	
+To know which all docker containers are running
+	docker container ls
+
+To kill or stop a container
+	docker kill <container_id>	
+	docker stop <container_id>
+	
+	Both of these will stop the container,however stop will ensure
+	graceful shutdown and kill will just kill the container process.
+	
+	
+	
+To run Tomcat image 
+	docker run -p <tomcat_port_no>:<?> <tomcat_image_id>	
+	Why do we specify 2 different ports ?
+	
+To find the home or installation directory of the software	
+e.g. when we run a tomcat image and need to find directory where tomcat is installed, we use
+	docker container exec -it <container_id> bash
+
+	Actually exec -it is to get into the container. Container is like a tight box which does
+	not interacts with the outside world. So if we need to get inside the container this command
+	is used. In above example , it points us directly  to the home location of the container.
+	
+To copy any file on installed image path, for e.g. when we need to copy war file to Tomcat webapps folder
+	docker cp '<local_file_path>' <container_id>:'<path on the container>'
+	
+To commit any existing container
+	docker commit <container_id> '<name_of_repo>:<Tag_of_repo>'	
+	
+To find all events happening inside docker on the host
+	docker events : This command gives all the events including stopping/starting of container and many
+					other events that are associated with docker on the host.
+
+To know stats of CPU and memory usage for a container
+	docker stats <container_id>					
+					
+To add notes later
+	docker run <image_name>	
+	
+	docker ps
+	Seems to be similar to 'docker container ls', need to check more
+	
+	docker ps -all
+	Seems to be showing the last command which was run.
+	
+	docker inspect <container_id>
+	Gives meta information regarding the container for e.g. IP address etc.
+	
+
+------------------------ Imp things noted ---------------
+
+$ docker run hello-world
+Unable to find image 'hello-world:latest' locally
+latest: Pulling from library/hello-world
+0e03bdcc26d7: Pulling fs layer
+0e03bdcc26d7: Verifying Checksum
+0e03bdcc26d7: Download complete
+0e03bdcc26d7: Pull complete
+Digest: sha256:8e3114318a995a1ee497790535e7b88365222a21771ae7e53687ad76563e8e76
+Status: Downloaded newer image for hello-world:latest	
+	
+
+
+------------------------ Docker File -----------------------
+Docker file is named as Dockerfile and it defines metadata about the image.
+i.e. 	which OS is the base of the docker file
+		Which all commands are run for the docker file
+		
+so a docker image is assisimilation of OS, software and its dependencies.
+
+Each command on the docker file mostly creates a new container and then joins the
+previous and current image and forms a new image. Possibly it removes the temporary
+image which was	created.	
+
+Caching : Docker creates a cache of the dockerfile once run, so that if we build image 
+again, it is much faster.
+
+----------------- Docker Sub commands -------------------------------------
+docker network  : 
+
+is the one of the sub commands which provides info regarding the
+network which is used in docker. Remember each container is an isolated environment and it is not
+allowed to be reached by any other programs outside its domain. But this is very big contrainst.
+So for e.g. we launch a webapp which needs to be called externally using a browser or any other API.
+So connectivity to outside world is required. For the very same reason we have networks in Docker.
+Networks are controlled via drivers and each type of driver has some characteristics.
+Broadly we have 3 types of drivers (host,bridge and overlay). Details about them is described below.
+
+Docker Network :
+Basic command to list all networks :
+	docker network ls
+	
+Drivers 
+	list of networks on docker displays list of drivers.
+	Drivers on a high level is the unit of network which defines scope of
+	network, type of network etc.
+
+Driver attributes:
+	Scope :	
+		Each driver has a Scope (i.e. local and remote)
+		Local  = Local network
+		Remote = 3rd Party
+
+	Type :
+		bridge 	: This is the default driver and any containers which are not specifed any drivers launch
+				  with this driver.
+			      This will be used when we have single host ( only 1 machine) and we want 2 of the containers
+				  on this single host to be talking to each other for e.g. if we launch apache and tomcat 
+				  on the given host and we want connectivity between them, we can use this.
+				  A Bridge driver essentially creates a new private network which is visible only in the
+				  current host. This network is given a IP range or subnet (you can inspect the network and check).
+				  Each of the containers hosted on the given bridge will be allocated IP's for the given range
+				  So if i launch 2 Tomcat on the bridge, both will have seperate IP's but the port could be same.
+				  This private network is directly in touch with the host machine (for e.g. my windows machine).
+				  
+		host 	: This would be used when we have single host and we dont want containers to be talking to each
+				  other.		
+		overlay	: It allows to have containers on different hosts talk to each other.
+
+
+-------------------------------------------
+Docker image : This is another subcommand which gives imp info regarding the given image
+
+Docker image history <image_name> : Gives all the meta-data or build info using which			
+									the image was built.
+
+Docker image inspect <image_name> : Gives useful info regarding the image.									
+
+
+
+-------------------------------------------
+Docker container : This subcommand gives specific info for the containers. 
+					Please note 'Docker ps' is a short cut for 'Docker container ls'
+
+Docker container prune :
+				All the stopped container somehow stay on Docker. 'Docker ps -a'
+				gives list of all container irrespective they are stopped or started.
+				prune command will destroy all the stopped containers.
+
+
+-----------------------------------------------
+Docker system : This subcommand give info regarding the docker system. It's commands
+				like events and info are already part of the shortcuts.
+
+Docker system df :
+				This provides info of the components which docker manages like images,
+				containers etc.
+				
+				
+---------------------------- Docker Compose --------------------------------------
+With Docker compose, we can create a container of Containers. So we have 2 different
+isolated containers wrapped up inside another container.
+
+Use-case : 	If i have a project which is having 5 micro-services interacting with each
+			other. Now i will have to remember to start all the services individually.
+			So if i have to run a integ test which needs all the services to be up,
+			i have a problem. For such case, we just build a parent image having 
+			all the 5 child micro-services images and we can start and stop the container
+			as a single unit.
+
+-----------------------------  Docker file -----------------------------------
+Docker file commands
+
+RUN
+
+FROM
+
+MAINTAINER
+
+ADD
+
+CMD
+
+ENTRYPOINT
+
+ENV
+
+EXPOSE
+
+USER
+
+VOLUME
+
+WORKDIR
+
+
+192.168.99.100
+
+
+
+
+----------------- 		Need to know --------------------------------------	
+
+Git bash vs Command prompt. what is the difference and which is better.
+What is busybox image.
+
+
+Need to know more about exec -it command and what exactly it is used for.
+
+	get the below when ran for image 'tomcat              7.0.99-jdk8-adoptopenjdk-hotspot   176fb5a50a1d'
+	the input device is not a TTY.  If you are using mintty, try prefixing the command with 'winpty'
+	
+	what does this mean ?
+	
+Need to understand more about Tomcat configurations, it has setting for adding password etc.
+	
+Google jib is a library which makes easy to build and deploy java apps on a container.
+Need to know more.
+
+Java applications are not container aware till Java 11, so need to know more around it and its
+limitations.
+
+	
+	

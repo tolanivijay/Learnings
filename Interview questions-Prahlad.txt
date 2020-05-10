@@ -1,0 +1,144 @@
+Problem Solving
+We have multiple data-sources having millions of records.How would we process this amount of records.
+Given a theatre (i.e a matrix of x * y) , find all available 3 consecutive seats
+
+
+
+
+Collections
+
+What is fail fast and fail safe ?
+	ArrayList is fail fast, vector,concurrentHashMap is fail safe.
+Internal workings of HashMap and HashSet.
+How linkedList will maintain insertion order.
+
+What is LinkedHashMap and what is it used for.
+
+TreeMap will throw ClassCastException if the object does not implement Comparable.
+
+Nullability and collections.
+	
+	
+MultiTreading
+What is holdlock() method --> It is a method of Thread class which tells if the current thread holds lock of specified object
+				
+	Executor framework
+		What is a future object. Submit of Executor service returns future object, why ?
+		What is shutdown command in executer service and why is it preferred ?
+
+	Immutable objects
+		What to create immutable objects,what are benefits?
+			They are thread safe.
+			Objects have to be immutable if used as a key on HashMap etc.
+			
+		Why is string immutable
+			Because String is very common to define names for connection etc and cause lot of issues if they change.
+			String recide in common area and are shared, if changed it can cause lot of issues.
+
+What is fork-join framework ? usage of it.
+	Based on work-stealing algorithm.
+	
+Difference between concurrency & parallelism.
+	Running more than one task is called concurrency
+	Spliting a task into smaller units and running all of them in parallel is called parallelism.
+Infinitely running thread can be stopped by interrupt(). 
+We have to call this method from different thread on the interrupting thread object.
+
+What is ThreadLocal ?
+
+Try an example for FutureTask.
+What is cyclic barrier and usage.
+What is atomic
+			
+Serialization
+What is serialversionID ?
+If we do not provide serialversionID and if we make any changes in the class  before deserialization 
+Then exception is thrown by java on runtime... invalidclassexception . 
+
+Design patterns
+What is Factory & Abstract Factory and what is the difference between them.
+When would you use singelton ? use cases for the same
+	Logging --> While logging, we cannot create more than 1 logging object as multiple areas would use logging and 
+			would un-necessary clough heap area.
+	Any getInstance() case.		
+
+
+Memory Management, JVM and GC
+Which command helps to control stack size for JVM -Xss
+What does stack (local variables,method calls,static variables )and heap contain(all objects)
+What is perm-gen and what does it contain ?
+Perm-gen is not available in Java 8 anymore.
+Types of GC's
+Memory areas are :
+1) method
+2)heap
+3)stack
+4)PC register 
+5) native method area
+
+
+
+
+Class Loaders
+Different types of class loaders ?
+All delegates request first to parents class loaders.
+Classes load by child class loaders have visibility in the claaes load by parents.
+Visual VM is most popular way of generating a thread dump in multi thread application. 
+it helps you to analysis thread performance,cpu consumption by thread and thread states etc..
+Difference between NoclassdefFoundError and Classnotfoundexception
+	NoclassdefFoundError comes when the class was available at compile but not able to load at runtime.
+	Classnotfoundexception comes when classloader tries to load the class explicitly on runtime.
+
+
+Compiler
+Jit compiler is used for to execute repeatedly executed methods...profiler identity the hotspot means which method to execute.
+
+
+Clonning
+clone method of object is a native method, what is native ?
+What is shallow and deep copy, examples of the same.
+Constructor is not called while clonning.
+
+
+Spring
+What is BeanFactory & ApplicationContext. What is the difference between these 2.
+	Mostly they are same.application context provides few more features like 
+	internationalization,text message support,event to beans that are registered as listeners.
+	Bean Factory has lazy loading and ApplicationContext has eager loading
+	
+What are interceptors and what are they used for ?
+	For cross cutting concerns like logging.
+	
+How to write init method and destroy method on a given bean in Spring.
+
+Spring beans and thread safety ?
+Cyclic Dependency and spring.
+
+Design-Patterns & Principles
+SOLID :
+
+1) Single responsibility principal 
+2)open closed design principal 
+3) Liskov substitution principal 
+4) Interface segregation principal 
+5) dependency inversion principal 
+
+
+DB
+Clustered Index and non-clustered index.
+Remove Duplicates using row_num.
+nth highest marks.
+
+
+Others
+
+What is JPA for ?
+Substring API change between Java 6 and 7.
+Java 7 features.
+5 different ways to create an object :
+1) using new keyword
+2) using newinstance method of class
+3) using newinstance method of construtor
+4)using serialization
+5) using clone method
+

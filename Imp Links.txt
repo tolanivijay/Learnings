@@ -1,0 +1,5 @@
+MongoRepository vs MongoTemplate.
+
+https://stackoverflow.com/questions/17008947/whats-the-difference-between-spring-datas-mongotemplate-and-mongorepository
+https://stackoverflow.com/questions/50412786/mongotemplate-custom-config-using-spring-boot
+

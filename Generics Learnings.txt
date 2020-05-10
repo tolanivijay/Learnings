@@ -1,0 +1,76 @@
+Generics : These are majorly used as a template implementation which can specify exactly what
+sort of objects to expect at runtime as well as creating multiple such implementations out of single
+template. for e.g.
+
+List<T> --> Before generics, we had this problem of consistency from collections like list.For e.g.
+the same list can have Integer,String and Objects too, so there was huge chances of ClassCastException.
+With introduction of generics, this is resolved and we specify what the list would exactly have?
+
+for e.g.List<String>,List<Student>,List<Integer>, so using the same List<T> template we can have multiple
+forms.
+
+Generics are very powerful and in their use case scnearios they can help a lot.For e.g. consider the below
+
+1) I need to prepare n number of Maps with custom Keys and Values. Each Map should be guarded by
+read and write operations,for e.g. each get should protect via Read Lock and each put should be guarded by
+write lock.
+
+Looking at the above requirement, the following is common for all of the maps.
+
+a) Each entity is a map.
+b) Each entity should protect read Operation via read lock
+c) Each entity should protect Write Operation via write lock.
+
+Answer is GenericCacheWrapper<K,V>
+
+Below gives exact implementation for what we need. Just imagine if we had to
+write readLock and writeLock for all the maps, would had looked so ugly.
+
+public class GenericCacheWrapper<K,V> {
+	
+	private Map<K,V> genericMap;
+	private ReadWriteLock lock;
+	
+	public static void main(){
+		ReadWriteLock lock =new ReentrantReadWriteLock();
+		GenericCacheWrapper<Integer,String> wrapper1 = new GenericCacheWrapper<Integer,String>(lock);
+		GenericCacheWrapper<String,Integer> wrapper2 = new GenericCacheWrapper<String,Integer>(lock);
+		
+		wrapper1.put(1, "2");
+		wrapper1.put("2", "2");// Compile error
+		
+		wrapper2.put(1, "2");// Compile error
+		wrapper2.put("2", 2);
+	}
+	
+	public GenericCacheWrapper(ReadWriteLock lock){
+		genericMap = new HashMap<K,V>();
+		this.lock = lock;
+	}
+	
+	public void put(K key,V value){
+		try{
+			lock.writeLock().lock();
+			genericMap.put(key, value);
+		}finally{
+			lock.writeLock().unlock();
+		}
+	}
+	
+	public V get(K key){
+		try{
+			lock.readLock().lock();
+			return genericMap.get(key);
+		}finally{
+			lock.readLock().unlock();
+		}
+	}
+
+}
+
+Generics and Inheritance :<Need to fill in details from SCJP book>
+
+
+
+
+

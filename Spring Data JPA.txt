@@ -1,0 +1,10 @@
+JPA stands for Java Persistance API and is a specification for Persistance majorly ORM's like hibernate.
+Hibernate is an implementation of JPA.
+
+Spring Data JPA adds one more layer here and makes development really easy when talking to Database is concerned.
+We can configure which JPA implementation to chose but by default it uses hibernate.
+
+Using JPA one may not even realize that it is hibernate behind the hoods.
+
+Spring data JPA dependency in spring boot also provides springJDBC classes like jdbcTemplate, so we can Spring JDBC too
+if required.

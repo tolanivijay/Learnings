@@ -1,0 +1,54 @@
+-------------------------------------- Ext JS --------------------------------------------------
+
+1) The six areas of purpose for Ext Classes
+	a)Core
+	b)UI
+	c)Remoting
+	d)Data Services
+	e)Drag and Drop - This seems to quite complex as per book
+	f)Utilities.
+
+Core components of Ext Js
+1) Containers --> As the name suggests , it is a parent body which can contain components or other containers
+	For e.g. TabPanel,FormPanel,FieldSet etc
+2) Componenent --> TextField , NumberField,Combobox etc
+
+
+
+Some important containers
+1) FormPanel --> This is a panel which can be used as a form.
+	Some components used here : TextField,DisplayField,Combobox
+2) TabPanel --> Majorly used when there are tabs to be displayed out
+3) GridPanel --> As the name suggests , this is used when we have a tabular form of data like database
+		to be represented in rows and columns. this component is more powerful than the tradional
+		grid of rows and columns. It supports draggable columns , auto filters and many other features
+		As it is feature rich , it comes at an expense. It can quickly fill memory as the amount
+		of DOM elements required in it are quite a lot
+Note : GridPanel uses some classes like Column model to get these rich features .Need to understand more on this
+
+4) DataView --> It is a simpler form of a grid and can display data from a store in a predefined way
+5) ListView --> It is a child of DataView and can represent data in a Grid format. However it does not
+		have powerful feature like filters , dragability etc . It can be termed as simplified version
+		of GridPanel
+		
+
+To define a new class , use Ext.Define .
+To create a new object , use Ext.Create . Its first argument takes the name of the class, and second argument takes 
+the various configurations or properties that needs to be overridden from the default implementation
+
+
+Mixins: The concept of mixins is the same of multiple inheritance.It is allowed in extJs.Each object in object
+has a property called mixins , where we can specify what all classes this given class needs to inherit. So
+actually this is aggreation and not inheritance . i.e. all the said classes are available as instance varioable
+in this given class , and it could be used with the identifier
+
+
+Every object in Ext JS has the base class as Ext.Base , so this class is the base class of all the objects
+in Ext Js , simlary as java.lang.Object is the base class in Java
+
+1) config : This property is defined in the parent , and lets us define class properties for which
+the framework will provide setter and getters automatically
+2) statics : This is the way to define static properties in a class which are common across all the objects
+3) singelton : These classes cannot be instantiated . Framework will throw error if try and create an object
+out of such a class
+

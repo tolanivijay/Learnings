@@ -1,0 +1,157 @@
+----------------------- Clustered and non-Clustered index --------------------------------
+Clustured and non-clustured index : A clustered index is a natural sort in the manner
+data is stored.So without a clustered index any query will be a complete table scan.
+So it is advisable and sort of mandatory to have a clustered index.When clustered index
+is applied data on disk is stored in an ordered way.It creates a binary tree when
+clustered index is applied.This way it makes retrival very fast. 
+
+The following are the recommandations while chosing a clustered inxdex.
+
+1) CI should be static (i.e. should not be updatable)
+2) CI should be ever increasing
+3) CI should be non-duplicate.
+
+Looking at the above properties it looks very close to a primary key of a table,
+so more often than not a PK is preferred to be a CI,thougth it is not mandatory.
+
+So effectively when we create a CI,DB creates a binary tree and assigns each node a
+value(say pointer). So when we search based on primary key it would traverse the binary
+tree and be able to find the record much much faster than a complete table scan.
+
+A table can have only one clustered index.
+
+Non-clustered Key : From above we know that a PK would more often than not be a CI,
+so a query of PK is obviously faster.Now what if we need faster retrival for any other
+field say lastName.In this case we would use Non-CI. Non-CI is like a pointer to
+a CI.So when we create a non_CI on the table,for each lastName field available
+it would point to a CI pointer.
+So effectively each non-clustered index uses CI.
+
+Elligible candidates for Non-CI :
+Columns which are more likely to be used in where clause,join clause or order by.
+
+Each custom index we create would by default be a non-clustered index
+
+----------------------- Sub Queries --------------------------------
+
+SubQueries : A sub query is a query inside a query.It is obvious that the
+inner query would be executed first, as its result is required for processing
+the outer query. for e.g below query,the inner query is evaluated first and
+its result is used by outer query. This is also called noncorelated sub-query
+
+select * from empSalary where empId = (select max(salary) from empSalary)
+
+
+Corelated subQuery: In Corelated,as the name suggests,the outer and inner
+query are related,so for each row in outer query,the inner query is computed.
+This can be used when we have a use case of processing each row individually
+
+for e.g. we have a mapping table which stores a mapping of empId vs managerId
+for all the emp in the org. and we want to fetch a query which gives us
+empName vs managerName. It is obvious that for each mapping in the table,
+we just need to replace Id to firstName from master table. This can be achieved
+as below. Here each row is processed one at a time and the respective values
+are fetched.
+
+select (select firstName from empMaster mast where mast.empId=man.empId) as emp,
+(select firstName from empMaster mast where mast.empId=man.managerId) as manager
+from empManager man
+
+----------------------------- Physedo columns in oracle -----------------------------------
+Phsedo columns are cloumns which are logical columns which are added to any table automatically
+by oracle.Below are some of them 
+
+RowId 	: A rowId is a physical address of a given row which never changes.
+RowNum 	: Rownum is a logical running number assigned to a given row at the time of execution.
+		  Rownums for a given row can change depending on a query but rowId would never change.
+
+Say if we have to randomly find 10 rows from the table we can use rowRum.
+
+select * from table where rowNum <=10;		  
+
+---------------------------- Important queries --------------------------------------------
+
+Query to find nth Highest :If we have to find nth highest salary,logically
+we can described as if for a row if n-1 rows are higher than me.so for e.g.
+if we need to find 3rd highest, so if we compare each row with all the rows in the
+table and find the number of rows higher than current row, that should do it.
+
+So clearly we need to compare current row with all the rows in the table, so
+it is a use case of co-related sub-query. Below is the query which achieves that.
+
+SELECT * 
+FROM empsalary Emp1
+WHERE (3-1) = (
+SELECT COUNT(DISTINCT(Emp2.EmpId))
+FROM empsalary Emp2
+WHERE Emp2.salary > Emp1.salary)
+
+Query to remove duplicates from a table:
+
+emp 
+-----	----------
+Name	salary 
+
+(select min(rowId) from emp groupby name) --> This gives us a row address from each group
+
+delete from emp where rowId not in (select min(rowId) from emp groupby name) 
+Above query retains the Id which we identified in previous query and deletes the rest.
+
+RowId is only applicable to oracle, so if we have to remove dupes from sybase or any other server,
+just add an identity to the table which would uniquely identify the row and apply the same concept.
+
+
+
+----------------------- Views --------------------------------
+Views : A view is sort of a query with a name just like a table which can be
+queried just like a table.We use views when we have a query (which can be joins of n tables),
+which is used too frequently for n clients. So in this case it makes sense to have
+this complicated query a name which can be queried easily.
+
+Internally whenever a view is queried the query which is formed is executed.
+
+Views allow updates as well but then each row is one-to-one relationship with 
+the base tables.There are many rules regarding the updates which can get pretty
+complicated, so updates on view should be avoided unless their is specific use case for the same.
+
+
+Materialized Views (Physical views) : MV's are a sort of replica of a query,which is similar to views,the
+only difference is that MV's are physical objects unlike a view. So when we define a 
+MV,the base query is used to form a physical table,which can be queried easily.
+
+The advantage of MV's are that it can be much faster than views as it is a table now and not
+the query which is executed each time.However this is a disadvantage as well. Whenever
+updates are done to base table,views are up-to-date but MV's may not be. MV's are updated
+periodically , so a query to MV's can be out of sync with base tables.
+
+
+---------------------------------------- Tables Partitioning --------------------------------------------
+
+When a table becomes a huge one,it is obvious that queries on the same will become slower and overall
+maintainability of the same becomes a problem. Partitioning is a concept which addresses this issue
+which breaks down the physical table into a set of small partitions. Partitions can be created based on
+various parameters depending on the business logic.
+
+
+-------------------------------------- Local and Global Transactions ---------------------------------------
+
+All Transactions which involve just one datasource is called local Transaction.It is pretty easy in nature.
+The first statement is a Begin Transaction and the last statement is commit or rollback transaction which
+ensures all statements are executed or rollback atomically.
+
+
+Global Transactions are transactions which involve more than 1 datasources.. this is also called
+heterogeouses datasources i.e. of different nature, for e.g. we want to bind 2 databases in different
+datasources in the same transaction or one database or one MQ in same transaction. This is very tricky
+because if you commit one of one and the 2 transaction is having issues ,there is no way to rollback
+the first transaction. In Global transactions a specialized stratergy i.e. 2 phase commit is adopted.
+
+2 Phase commit has 2 stages and has 2 actors i.e. Co-ordinator and Participants
+	1) Request phase :
+		In this phase the co-ordinator asks for all participants to check to perform basic validations
+		and ack if they are ok to proceed with the transaction. If it gets ack from all participants
+		it initiates commit phase.
+	2) Commit phase :
+		In this phase based on the ack or no-ack from participants either all participants are asked
+		to commit or rollback.
+

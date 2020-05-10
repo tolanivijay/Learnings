@@ -1,0 +1,5 @@
+@EnableAutoConfiguration : Check what is this.
+
+If you don’t want to use @SpringBootApplication, the @EnableAutoConfiguration and
+@ComponentScan annotations that it imports defines that behaviour so you can also use that
+instead.

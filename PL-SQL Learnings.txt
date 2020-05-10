@@ -1,0 +1,40 @@
+Various PL/SQL objects
+
+Procedure	: Cannot return a value
+Functions	: Functions can return a value
+Packages
+
+Basic Block
+
+Declare	(Optional)
+
+Begin
+
+Exception (Optional)
+
+
+END
+
+--------------------------------------- DBMS_OUTPUT -------------------------------------
+
+DBMS_OUTPUT only supports characters to be output to console. so if a number needs to be
+displayed,use To_Char() function to convert it appropriately.
+
+
+
+
+---------------------------------------- Loops -------------------------------------------
+
+Apart from for and while loop,we have a loop .. end Loop with exit when condition loop as well.
+
+
+
+
+
+
+
+
+
+
+
+

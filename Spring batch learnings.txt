@@ -1,0 +1,10 @@
+
+
+
+---------------------------------------- Things to check -----------------------------------
+When added dependency of spring batch in pom, the application failed to start with error
+Failed to auto-configure a DataSource: 'spring.datasource.url'.
+
+It seems it needs some data-source configuration to start with. Should not be the case otherwise
+it would not support case of reading from file system and writing to a file system
+

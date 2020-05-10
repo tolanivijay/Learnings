@@ -1,0 +1,189 @@
+----------------------------------- Why Mongo DB --------------------------------------
+Use case of Mongo is High Availalibility and Horizontal scaling (Sharding)
+
+HA : In Mongo we have a concept called Replication Set(RS) which consists of Primary and secondary nodes.
+     RS has more types of nodes than primary and secondary, however from usability perspective they are
+ 	the most important. What Replication means is data is replicated from Primary to Secondaries.
+	Most of the time the client will read and write to the primary and primary is will replicate
+	this data across to the secondary servers.
+	So in above case if a primary server goes down, we still have data available in secondary servers
+	and Mongo will automatically make one of the secondary as primary without any user intervention
+	and the user does not even know that such outage had occured. 
+	Hence the data is highly available and does not depend on any particular server.
+	Obviously the next thing in mind would be we are maintaining multiple copies of the same data
+	so if the data is big, then this becomes an over-head. Horizontal scaling comes to the rescue.
+
+Horizontal Scaling:
+	When resources are not enough to perform a specific operation i.e. i might need more RAM,CPU etc
+	there is a limit to what a machine can be scaled to. Increasing resouces on a specific machine
+	is called vertical scaling and if we increase more nodes and the processing is now spread across
+	these nodes, this concept is called Horizontal scaling.
+	Mongo supports Horizontal scaling through a concept called Sharding.
+	Sharding is similar to the concept called Partioning in Relational DB's.
+
+	Partioning :
+
+	When data on a given table becomes very huge than abviously queries on it becomes slower.
+	To over-come this problem we create partitions on a DB which are logical data-sets of similar data.
+	say for e.g. i create monthly partion based on createdTime on a table, so all my data for a given
+	month stays in same unit and i dont perform a whole table scan each time.
+
+	Sharding :
+
+	With sharding we are doing similar thing however the key difference is my world is the whole
+	cluster of machines and not limited to the same server. So based on a criteria i would create
+	logical groups called shards and these shards sit at multiple servers across the cluster.
+	So for e.g. i have 100 records in a collection and have 5 shards and my cluster has 10 nodes.
+	and i have replication factor of 3, so below can be how the data might sit
+
+	Shard-1 (1-20 records) on Host-1/2/3
+	Shard-2 (21-40 records) on Host-4/5/6
+	Shard-3 (41-60 records) on Host-7/8/9
+	Shard-4 (61-80 records) on Host-10/1/2
+	Shard-5 (81-100 records) on Host-3/4/5
+
+	In the above case if you see, my data is not sitting in any specific server and is spread across
+	and it is replicated too.
+
+	There are 2 types of Sharding
+
+	Key Based (Hashing): 
+	Here we define a key which is any attribute in a collection and which will be
+	used as a hash attribute to determine which shard the given records goes to.
+	In Java for hashing we define hashcodes for object, in Mongo the framework does it for us.
+
+		Ideal Key to be used for Hashing:
+			Ideal key would be a key which is sort of primary key i.e. not null,not changing and unique.
+
+	Range Based (Similar to Partiontioning)
+	Here we define a range say creation-Date range to create shards.
+
+	Sharding is application at collection level, so in a db of 5 collections we can choose which all
+	collections should be shared. However to shard any collection, we need to first enable sharding at 
+	Database level.
+
+------------------------------MongoDB Internals-----------------------------------------
+Op-log : MongoDB maintains a log file which is also called operations log which records all the operations which 
+		can change state of a collection. It is sort of audit trail for all state changes. This log
+		file is also replicated in the cluster i.e. from primary to secondary.
+
+-----------------------------------------------------------------------------------
+db is a global variable in Mongodb, and it represents the current database assigned.
+We can find the current database by simply typing db on the shell.
+Also to change database , use <DB_NAME> can be used.
+
+
+
+
+-----------------------------------------------------------------------------------------------------------
+Things to check
+
+Subcollections are nested collections,and is highly recommended. Need to check on this
+
+
+-----------------------------------------------------------------------------------------------------------
+Imp Commands
+
+mongod --dbpath <path>		This will start the server with the files to be placed in path.MondoDB by default
+				has dbpath set to C:\data\db, if not specified it will try to place files under
+				the path and will not start if the path does not exist.
+				
+mongo				This will connect to the mongo server and enter into Mongo shell.
+
+-----------------------------------------------------------------------------------------------------------
+Aggreation
+
+aggregation method will allow to query apart from traditional where clause, for e.g. it will allow group by
+conditions, projecting the output as per need.
+
+Grouping: 
+
+For grouping, the fundamental condition is represent _id which is supposed to be unique field in
+mongo to the group by fields, for e.g. if i need to group by a particular field then the below query would
+come in picture. The below query would group by dept and sum all salary for respective group.
+
+db.employee.aggregate({"$group" : 
+    {
+        "_id":{'dept':"$dept"}, "count" : {$sum : '$salary'}
+    }})
+
+If we need to group by multiple fields then, something like below can be done.
+The below query groups by both dept and subdept and prints the count of occurences in respective
+groups.
+
+Please note this is different then above query, where we are adding all salaries and in below we are
+counting all occurences, and in both cases $sum function is used unlike traditanal SQL where we have
+different sum and count functions.
+db.employee.aggregate({"$group" : 
+    {
+        "_id":{'subdept':"$subdept",'dept': '$dept'}, "count" : {$sum : 1}
+    }})
+
+Projection:
+
+Projection helps to fetch results in desired format, for e.g.
+
+The query below does not gives out result which is flat.
+
+db.positions.aggregate(
+{
+    $group :
+        {'_id' : {'product': '$product','leCd' : '$leCode'},
+        'aggreagatePos' : {$sum : '$position'}
+        } 
+}
+
+Example Output of above
+{
+    "_id" : {
+        "product" : "IBM.N",
+        "leCd" : "02"
+    },
+    "aggreagatePos" : 2000
+}
+As we can see the output structure is not flat, if we have to flatten it out, we can use $project like below
+
+db.positions.aggregate(
+{
+    $group :
+        {'_id' : {'product': '$product','leCd' : '$leCode'},
+        'aggreagatePos' : {$sum : '$position'}
+        } 
+},
+{
+    $project :
+         {
+             '_id' : 0,
+             'product':'$_id.product',
+             'leCode': '$_id.leCd',
+             'position':'$aggreagatePos'
+         }
+}       
+)
+
+The above is an example of Pipelining i.e. sending the output of one operation to the second one i.e.
+in this case output of group is sent to project which simply flattens out the output.
+
+Please note for Pipeline {} of group has to be completed and has to be passed out to {} of project.
+
+       
+)
+------------------------------------------------------------------------------------------------------------
+
+Issues and resolution
+
+1)	Sometimes upon unclean exit,mongodb would not start again and fails with error
+'Unclean shutdown detected.' in the log. This is because in the working directory
+mongodb maintains a file called mongod.lock , this has size of some KB when mongodb
+starts and no size on a clean exit. The above error is most probably because the
+file has some size. Use the below to resolve this.
+
+Remove the file mongod.lock and run 'mongod --dbpath C:\mongodb\data\db\ --repair',
+this should resolve the error if not visit 'https://docs.mongodb.org/manual/tutorial/recover-data-following-unexpected-shutdown/'
+
+
+2) Duplicate Fields : Though the book says that mongodb does not allow duplicate field names in a document,yet
+			i was able to insert dupes. Mongo documentation does also have a lots of ifs and but
+			around this topic. Need to check. 'https://docs.mongodb.org/v3.0/core/document/'
+
+

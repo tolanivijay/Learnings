@@ -1,0 +1,138 @@
+----------------------------------Lambdas --------------------------------------------------
+ 
+Lambda is a function or method which is not part of any class.
+Lambda's were introduced so that the unnessary lines of code that needs to be
+written for obvious things can be done away with. For e.g. if i have list of students
+and i need to sort them based on some condition, i have collections.sort which takes
+a Comparator. No Comparator is a interface with just has one abstract method
+			
+int compare(T o1, T o2);
+
+Now before lambdas's we had to either create a new class to implement Comparator and pass
+it to the sort method or create an inline implementation of Comparator in the sort method
+which is very ugly. Something like below
+
+Collections.sort(studList, new Comparator<Student>() {
+			@Override
+			public int compare(Student o1, Student o2) {
+				return o1.getMarks() > o2.getMarks() ? 1 : -1;	
+			}
+		});
+		
+But with lambdas now it is very simple i.e.
+
+Collections.sort(studList, (x,y) -> x.getMarks() > y.getMarks() ? 1 : -1);	
+
+Above if you see we have done away with the unwanted code of new Comparator, providing method name etc
+and the implementation looks so much easy to understand.
+
+Similary to start a create a new thread can be written as
+
+Thread t = new Thread(() -> { 
+			System.out.println("Started new Thread"); 
+		})
+		
+In above if you notice we have given {} for the statement, this can be used if there are more than 1 line 
+in the implementation of the interface.
+
+----------------------------------SAM(single abstract method) ---------------------------------------------------------
+Lambdas can only be applied to SAM(single abstract method) interfaces 
+
+The above line makes sense because if there are more than 1 methods, someone would need to specify which is the target
+of the lambda expresssion as we are not specifying method names in Lambdas. Hence Lambdas can be applied only to
+interfaces having single abstract method (for which we are providing implementation)
+
+Any interface having just 1 abstract method qualifies as FunctionalInterface
+Having only 1 abstract method is a sufficient criteria for being elligible for functionalInterface (and target for Lambda expresssions),
+however it is recommended to mark such interfaces with @FunctionalInterface annotation.
+
+
+----------------------------------------- Default methods -----------------------------------------------------
+
+Traditionally Interfaces never were allowed to have implementation for methods, but this notion is changing with Java 8.
+From Java 8, an interface can provide method implementations, however they should be default methods.
+
+Default methods were introduced as lambdas and streams will make heavy use of interfaces and need some default behaviour,
+if java 8 would had added new methods to existing interfaces that would had broken the contract and would hence be non-backward compatible.
+
+Abstract classes vs Interfaces will default methods.
+The major difference now is that abstract classes can have state i.e. instance variables but interfaces can only have static constants
+
+
+-----------------------------------------Streams -----------------------------------------------------------------
+
+Streams operations can be broadly divided into Intemediate & Terminal operations and in a expression Intermediate operation 
+is optional but more often than not Terminal operation would be required.
+
+Intermediate Operations :
+	filter : This is the most common of operations which is used and as the name says, it is used to filter  
+				from a collection based on a condition.
+				
+				Signature of filter : Stream<T> filter(Predicate<? super T> predicate);
+				
+			 Now lets decode how does it work.
+			 Predicate is a functionalInterface which takes a type and returns boolean.
+			 So for a list of Student objects , i might have to get a sub-list of students whose age > 35,
+			 so i prepare a method which takes a student object and returns true if the condition satisfies
+			 and iterate through the list of students and if the condition matches, collect it in a different list.
+			 All of this can be achieved using
+
+			 studList.stream().filter(e -> e.getAge() >=35).collect(Collectors.toList()));
+
+			 Now the above condition seems too simple, if it can go to multiple lines we can also replace it with
+				a function which takes a Student object and returns true like below
+				
+			 studList.stream().filter(EmpUtil::isAgeGoodEnough).collect(Collectors.toList()));	
+			 
+			 Note we are not providing any arguments in isAgeGoodEnough it is taken care because of :: operator.
+			 
+	map	 :	map represents the transform from (ETL), if we need to transform anything depending on the current state
+			we use map. Classic example is given a list of students, we need a list of String with just student names 
+			and that too in upper case.	
+			
+			Signature of map <R> Stream<R> map(Function<? super T, ? extends R> mapper);
+			
+			so in our case the generics would translate to
+							String map(Function<Student,String>)
+							
+			looking at the signature of function, it is clear that it expects a function which takes a student
+			and converts it to string. Below is the implementation. If we need to get Student list with names
+			as upper case, the function convertNameToUpperCaseStr would return a Student after performing the
+			logic
+			
+			studList.stream().map(TestLambda::convertNameToUpperCaseStr).collect(Collectors.toList());
+			
+Terminal Operations :			
+	Collect : 	Collect as we see from above is a very commonly used Operation
+
+	forEach :	As the name says it is used to perform any task,whilst providing a Type.
+	
+				Signature of forEach: void forEach(Consumer<? super T> action);
+				
+				If for given list of students, we need to persist them or do anything, forEach can be used.
+				
+				uppderCaseStudStr.stream().forEach(x -> System.out.println(x));
+				
+	Reduce	:	
+				
+	
+	
+Predicate   :    	boolean test(T t);		
+BiPredicate :		boolean test(T t, U u);
+
+
+Consumer	:		void accept(T t);
+BiConsumer	:		void accept(T t, U u);
+
+
+Function 	:		R apply(T t);
+BiFunction	:		R apply(T t, U u);
+
+
+Supplier	:		T get();
+
+
+
+
+
+

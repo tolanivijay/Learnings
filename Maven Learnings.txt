@@ -1,0 +1,11 @@
+------------------------------------------------------- Need to check ---------------------------------------------------
+
+As in the example to turn a Spring boot application to a WAR deployable, we had to define the embedded Tomcat
+dependencey as 'Provided'. Need to understand more on the dependencies scope.
+
+<dependency>
+     <groupId>org.springframework.boot</groupId>
+     <artifactId>spring-boot-starter-tomcat</artifactId>
+    <scope>provided</scope>
+  </dependency>
+

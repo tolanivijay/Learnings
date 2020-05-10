@@ -1,0 +1,613 @@
+Check Optimistic/Passimistive Locking
+
+			
+----------------------- wait,notify and notifyall --------------------------------
+
+These methods are for inter-thread communication . Classic example is producer-consumer
+problem with any non-blocking collection like list. 
+Here if the list is empty,consumer should be stopped and when the list is full, producer
+needs to be stopped,
+
+So when queue is empty 
+	--> Consumer thread calls wait which gives back the lock and go in waiting state
+	
+and when queue is full 
+	--> Producer thread calls wait which gives back the lock and go in waiting state
+
+all these methods can only be called from a syncnoized block,i.e. we should have the 
+lock on the object before calling these methods else IllegalMoniterException is thrown.
+
+wait() releases the lock instantly upon calling the method.
+notify() does not release the lock,but should ideally be called when we are about to release lock
+and need to wake up a thread.(i.e. notifying a thread which has called wake before)
+If multipe threads have called wait before then JVM choses the potential thread which needs to wake up.
+notifyall() : like notify ,it wakes up waiting threads by opposite to only 1 thread which is notified
+on notify(),all waiting threads are notified but obviously one of them will acquire the lock.
+
+
+----------------------------- Producer:Consumer ---------------------------------------------
+Producer-Consumer is a pattern where we need async processing of producing task and consuming tasks.
+For e.g. we have a lengthy process of processing a object and then persisting it.persisting at times
+can be blocking and may take more than a few seconds,if this complete process is in sync even after
+processing the object ,control will hold for the DB to finish syncing.
+
+To avoid this we can use producer,consumer where producer thread processes the object and puts it 
+on a queue and then consumer thread can read from this queue and persist to DB.
+
+In producer-consumer,as this is happening in memory,we cannot allow the limit of the queue to be 
+infinite, as it may cause OutOfMemoryError, so it has to be a bounded queue with max of n possible
+unprocessed objects.
+
+If this is the case then when the queue is empty,consumer thread should wait and like wise if the
+queue is full, producer should wait.
+
+Java has this new API called BlockingQueue which has exactly this same feature.i.e. 
+take() method which fetches and removes the element from its head when there is an element available
+in queue or else blocks or waits till the queue has an element.
+
+Similarly, the producer adds elements on the queue using put() method and the method blocks or waits
+till if the max number of elements have been reached.
+
+BlockingQueue throws Null-Pointer when a null element is inserted on the queue.
+
+BlockingQueue is a interface. Below are 2 of the implementations for the same.
+	ArrayBlockingQueue:
+	As the name says the underlying implementation is a Array. It is always bounded and we need to provide limit to 
+	number of elements right at the start.
+        It has just one lock and put and take operations would block each other.
+
+	LinkedBlockingQueue:
+	The underlying is a linkedList. It can be bounded or unbounded.
+	It has 2 locks which seperately guards put and take, so put and take do
+	not block each other unless the list is empty or full.On paper it looks to be 
+	a better choice than ArrayBlockingQueue
+
+
+----------------------------------------- Executor framework --------------------------------
+Executor framework forms the basis of decoupling of 2 imp ingredients of multi-threaded programs.
+1) Task
+2) Thread
+
+In a multi-threaded env,we have a ability to perform a task concurrently for say n different users
+for e.g. in a typical producer-consumer case, consumer task is 2 read from a queue and process the message.
+In a single threaded application each message is done sequentally so for e.g. if a message processing 
+takes 1 sec, the 10th message has to wait that long and this is a classic example of un-even producer-
+consumer which is not advisable.So the task here is to read from a queue and process it.
+So the only thing we need now is a Thread-pool. ExecutorService in ExecutorFramework is nothing but 
+an easy abstraction for Thread-pool. It gives us easy flexibility for changing the pooling
+stargegy like a fixedSizedPool or DynamicPool(to be used with caution as it creates and destroys threads
+at runtime which can be tricky if the processing time is less than producer sending messages, which can
+cause a big size of thread pool which can cause CPU stress).
+
+An example of ExecutorService is as below
+
+private final ExecutorService executor=Executors.newFixedThreadPool(10);
+
+The above statement defines a threadPool of 10 threads,where we dont need to worry about
+creation and management of the threads.Executor framework uses thread factories to create threads.
+An over-loaded constructor allows us to create fixed sized pool with custom Thread Factory.
+
+The only thing we need to give it a task, and we are done, the task is handled in a multi-threaded way. A simple example
+below. Task is nothing but a runnable implementation which can be as simple as S.O.P.
+
+
+public class LoggingService {
+	
+	private final ExecutorService executor=Executors.newFixedThreadPool(10);	
+	private static LoggingService logService= new LoggingService();
+	
+	public void shutdown(){
+		executor.shutdown();
+	}
+	public static LoggingService getInstance(){
+		return logService;
+	}
+	public void log(String message){
+		executor.execute(new LogMessage(message));
+	}
+	private LoggingService(){
+	}
+	private class LogMessage implements Runnable {
+		String mess;
+		public LogMessage(String message){
+			this.mess=message;
+		}
+		public void run() {
+			System.out.println("Thread ["+Thread.currentThread().getName() + "] "+ mess);
+		}
+	}
+
+}
+
+LifeCycle for Executors : It can have 3 stages Ready/Running,Shutting down,Teminated.
+One more nice benefit of executor is that it easily allows graceful shutdown.
+Now if a JVM has to shutdown , it would wait until all worker threads have finished
+processing, so in case of executor we need to be able to stop all the executor threads.
+We can do this via the shutdown() method.shutdown ensures gracefull shutdown that is
+all the tasks which are pending for execution are allowed to complete and then it
+destroys all the threads.No new tasks are accepted after the shutdown is called.
+Once the worker threads are shut, the excutor is marked as termiated and new calls
+to the executor will result in exception.
+
+Types of Executors :
+
+1) FixedSizePool :	Executors.newFixedThreadPool(10)
+
+2) CachedThreadPool : Executors.newCachedThreadPool() -- This is unbounded
+
+3) SingleThread : Executors.newSingleThreadExecutor() -- Single threaded.
+
+------------------------------------------ Concurrency and Multi Threading ------------------------------------------
+There are 3 ways to protect a state(or instance variables) of a class.
+
+1) Define them as immutable (i.e. they cannot be changed in their lifetime, whenever modified a new object is created i.e String)
+2) Do not allow modification to the variables (Which is rarely suitable)
+3) Protect the state using syncronization
+
+
+Local variables are always Thread safe. This is because they live and exist on the calling Thread's stack.
+So as they are visible only to the current thread, they are thread safe
+
+
+Race condition : This is the condition when 2 threads are trying to perform the same task.
+For e.g. if the task is to check if the given file exists and if does not exist,create a file with some contents.
+So the operation read-check and write. Now if there are 2 Threads execute at the same time trying to check and
+create the file. It is possible that both threads dont find the file existing and try to create the file,
+which in essence is not correct and this may lead in data overwrite or even file corruption
+
+
+What is a atomic operation : In simple terms a operation which is thread safe, i.e. when we increment an integer
+in a non thread safe environment ,it does fetch the current value, add a number to it and then write this in
+memory. This is not thread safe as 2 Threads might read the same value and then add to it.
+To avoid this problem we have AtomicInteger API which has a method incrementAndGet which would be synchronized
+
+
+Reentrant Lock : As the same suggests it is property of the lock which means that if a thread has acquired a 
+Lock on an object,it can reenter any other syncronized context any number of times of the object without any blocking. 
+
+for e.g. i have 5 syncronized methods and a thread is inside one of these methods, it can call all of the remaining
+4 methods without blocking since it has already acquired lock on the current object. This feature is called Reentrancy.
+syncronized blocks or methods (intrinsic locks) are Reentrant.
+
+
+When 2 methods are syncronized, it does not mean that an operation combining the 2 methods would be atomic (i.e. Thread safe)
+The below operation is not atomic inspite of the fact that both contains and add method are syncronized. This is because
+when contains method is completed, it releases the lock and the same lock acquiring mechanism would apply for add method.
+which is not correct as the state might have changed when add acquires lock.
+For e.g if (!vector.contains(element)){
+	vector.add(element);
+}
+Correct usage
+
+syncronized(this){
+	if (!vector.contains(element)){
+	vector.add(element);
+}
+
+Visibility for shared variables : When variables are shared across threads, and syncronization is not put in place,
+it is possible that the other thread does read stale data.Section 3.1 in book. It is quite possible that Thread 1 updates
+a value and still Thread 2 who reads this value after the update,does not read the updated value. 
+This is because of some caching on the threads stack, while acquiring lock which takes a snapshot of values
+on the object, and which is not refreshed on other thread update the value. When locking is done, it blocks the
+reading thread, hence snapshot is enabled only after the write was completed by the other thread.
+
+Volatile variables : Volatile variables provide a weak type of synchornization. When a shared variable is not atomic,
+we have 2 problems
+
+1) Each write may not be visible to read threads at the same time,i.e. values of the variable of thread stacks is not refreshed.
+2) There is no blocking between read and write operations, so for cases where read value is a substancial value in performing
+write,we have problems. like i++, which is equivalient to i = i+1 ,which is equivalient to i= get(i)+1, if the value of changes
+after get(i) is performed and before the value is set again, we have a problem and there can be inconsistencies, so a block of
+read when write is performed is necessary aspect of syncronization or automic operation.
+
+Volatile variables only help solve 1) above, where it would be garented that each read operation after write operations involving
+multiple threads whould result in updated or refreshed value. However with volatile variables , there is no blocking or lock
+mechanism involved, hence they cannot be said as Thread safe.
+
+So for e.g. i need to increment integer by 1 and if the variable is defined as volatile. Being volatile i would be able to 
+always read the refreshed value, however before i increment it by 1, if some other thread changes the value, this is a huge problem
+condition, as my read, then write operation is still not atomic.
+
+Collections : Synchronized Collections may not provide synchronized behaviour. for e.g. Vector which is a synchonized collection
+all the methods are syncronized, so get and remove methods would be in sync, but what about a compound action which first
+fetches the index of last object and then deletes object at that index.
+
+public void removeLast(Vector v){
+	int lastIndex= v.getSize()-1; //
+	v.remove(lastIndex)
+}
+
+Here it is possible that when we compute lastIndex, some other thread might have removed an element from the vector,
+which would mean there is no element actually at lastIndex now and deleting would result in exception.
+The same can be avoided using the below. Here both get and remove are performed inside a lock, hence is threadsafe.
+
+public void removeLast(Vector v){
+	syncronized(v){
+		int lastIndex= v.getSize()-1; //
+		v.remove(lastIndex)
+	}
+	
+}
+
+-------------------- Fail fast & fail safe ------------------------------------------
+All traditional collections are by default fail-fast which means that if during iteration if
+the collection is added or removed (by same or different thread), it throws ConcurrentModificationException
+to denote that something has changed.
+
+ConcurrentPackageImplementations solve this issue, so a ConcurrentHashMap or CopyonWriteArrayList,BlockingQueue
+etc dont throw this exception, hence are called fail safe.
+
+ConcurrentModificationException : This unchecked exception is caused when while iterating 
+an collection identifies that the collection has changed. This can happen both in single
+Threaded as well as multi threaded enviornment.In single threaded, if we iterate through a collection and
+while iterating change the state of collection like adding or removing an element,it results in CME
+since Collections are fail fast i.e. any state change while itering is not desirable.
+In Multi threaded environment, if any other thread changes state while iteration of the current 
+thread once again CME is caused
+
+
+ConcurrentHashMap : This is the syncronized data structure which is a better alternative to
+Synchonized maps. The difference is ConcurrentHashMaps cannot be locked expicitly. 
+This collection has atomic operations for if not available then replace, etc.
+The locking mechanism of CHM is very different i.e. it does not have intrinsic locks
+for protecting all methods which has huge potential problems like size() and hasKey()
+methods block each other,where the combo is harmless.CHM uses ReadWriteLock where in
+read does not block a read operation. Also for write operation , it uses 16 locks
+to protect its elements (read lock stripping), so it is very much like a page lock
+in DB and not a table lock, so a max of 16 concurrent threads can write on the
+Map
+
+--------------------------------- Deadlocks and Liveness---------------------------------
+
+Deadlocks: Databases too encounter deadlock, but it is sort of more graceful in handling
+deadlocks. It picks up either of the offenders, and kills it for the deadlock to break.
+JVM will hang or behave unpredicatably under such circumstances.
+
+Deadlock is a situation typically when there is a circular reference.i.e Thread 1
+while acquiring Lock A tries to get hold of Lock B and similary Thread 2 while
+acquring Lock B tries to acquire Lock A. So this is resulting into a circular refrence
+which will lead to deadlock.
+
+In below example it is pretty evident that it can deadlock because the lock acquisition
+is 2 way i.e. a --> b and b ---> a
+
+If we can make this refrencing linear and not circular, this is one of the ways to avoid
+deadlock. For e.g. if we introduce a constant in ClassA as 10 and ClassB as 20, so that
+all objects in respective classes holds these values, and then while acquiring locks
+we always acquire lock of object having the least value first , so this creates a 
+linear acquisition and hence can avoid deadlocks.
+
+public class DeadLockCause{
+private ClassA aLock;
+private ClassB bLock;
+
+public void ab(){
+	synchonized(a){
+		synchonized(b){
+			Thread.sleep(10000);
+		}
+	}
+}	
+
+public void ba(){
+	synchonized(b){
+		synchonized(a){
+			Thread.sleep(10000);
+		}
+	}
+}
+}
+}
+
+
+Thread starvation : Thread starvation is a situation when a particular thread
+does not get to execute and is starved of CPU cycle.For e.g. if a method
+acquires a lock and then goes into infinite loop, other threads in this
+case would be starved of the lock and hence will be waiting forever.
+
+
+Live-Lock : This is a situation when a thread is executing a particular task
+indefinately and other tasks cannot be executed because of this.
+For e.g. we read messages from a queue and then process it. If during processing
+there is an exception,the message is rolled back on the queue on its head.
+This causes the message to be processed again and the same exception over and
+over again.
+
+
+Neither of the conditions like live-lock,starvation or deadlock would stop 
+the execution or result in an exception. We need to find it out ourselves.
+One way of finding is using Thread dumps which helps to find out deadlocks
+or helps in finding a behaviour of thread operation.
+
+Thread dumps could be acquired using jconsole or any other monitoring app on
+windows (or cntl+break, thought not tried) or exit -3 on linux or unix.
+
+
+
+
+
+----------------- Instrinsic Locks and Other Locks like Reenterant------------------------------
+
+Instrinsic locks are implicit locks which is guarded by syncrnonized keyword.
+Lock acquisition and lock release is handled by the JVM. But in few cases it is advisible to
+not use intrinsic lock for e.g. There a huge limitation with intrinsic locks that is blocks
+read-read operation. Consider the below example.
+
+In the below case all methods are declared as syncronized because we have to protect
+state of the empId.The huge limitation with the below is even getEmpId and getEmpName
+or other read operations are blocking each other which is cruel as a concurrent access
+of these 2 methods by 2 threads is harmless, yet it blocks. Better way to handle this is
+ReentraantReadWriteLock. 
+
+Implementing the reentereantReadWriteLock will not block 2 read operations. It will block
+Read lock acquisition only if Write lock is acquired. One more interesting issue even in
+this implemetation is that setEmpName blocks getEmpId(), which is also not ideal. So
+overcome this issue we should have reentractLock for each instance variable , which sort
+of solves the issue but can be maintenance heavy.
+
+public class Employee{
+
+private int empId;
+
+private String empName;
+
+public syncronized void getEmpId(){}
+public syncronized void getEmpName(){}
+public syncronized void setEmpName(){}
+public syncronized void setEmpId(){}
+public syncronized void getEmpFirstLast(){}
+public syncronized void getEmpLastFirst(){}
+
+}
+
+Fairness : One more attribute of lock which is a add on to intrinsic locks is fairness.
+While using intrinsic locks, the order of thread scheduling is completely dependent on
+JVM. For e.g. there are 10 threads waiting for a resource, it is possible that the one 
+which is waiting for just 2 secs gets preference over a thread that is waiting for
+10 secs, which is sort of unfair policy. With locks we can change that policy(unfair by default),
+to be fair and change the behaviour to allow access to the maximum waiting thread.
+But beware Fairness seems to be an ideal solution but it comes with the extra cost of time lag 
+because the elligible blocked threads has to be notified and then waited upon which can be
+time consuming. So just do not fairness lock because it seems ideal. Remember there would
+be performance hit.
+
+Bad thing about Locks : One really bad thing about locks is that they have to be manually
+managed,i.e. you are responsible to acquire and release lock, if by any reason you forget
+to unrelease a lock, no one complains until it breaks in production and then it becomes
+very difficult to understand the reason of failure. 
+It is advisable to always use a finally block , to give away the lock.
+
+
+----------------- Non blocking algorithm for achieving atomic nature------------------------------
+
+Non blocking algorithm blocking: Algo which can achieve thread safety without blocking resource or technically 
+speaking not locking resources are non . For e.g. AtomicInteger,AtomicBoolean etc
+do not use lock internally but still achieve thread safety.
+This is majorly achieved by a conjunction of volatile variables and a mechanism called 
+CAS(Compare and swap).CAS programming is pretty intense and goes to low levels of CPU access and
+best left to experts.
+
+From a user perspective,we just need to know that there is a technique which does not block
+but yet achieves thread-safety.
+
+
+----------------- Performance and ThroughPut ------------------------------
+
+ThroughPut -- ThroughPut is defined as number of tasks that can be performed in a
+given number of time. For e.g. a program to print 1-100 when performed in single threaded
+env,will be much lesser than when we create say 5 threads and give these threads this task.
+So effectively it is a speed checker.
+
+This is not true that increasing number of threads will increase performacne exponentially.
+There is Amdal's law which specifies the max speed or throughput a program may achieve.
+This law also takes into account the number of processors that a CPU has.
+The number of cores or CPU (like dual core,quad core) is directly propotional to the
+throughput of the program. So an multi-threaded app will have better throughput on
+quad core than on dual core. This is because consider dual core as 2 CPU's and quad core
+as 4 CPU's. More the number of CPU's, more parellel processing that can be achieved.
+
+
+Lock stripping and Spliting :
+
+Spliting :Wonder why setId and setName should block each other.2 threads accessing
+setId and setName concurrently is harmless, so why should we block them?
+Answer to this is spliting where in we create 2 locks one which is guiding
+Id and other which guides name, so setId and setName dont block each other.
+
+Stripping : This is another technique where in we create n number of locks
+protecting a class,for e.g. ConcurrentHashMap has 16 locks which guides
+element in N mod 16 buckets.
+
+---------------------- Thread Synchronizing DataStructures --------------------------------
+There are a few Datastructures which are created for some specific usecases of thread synchornization
+
+Semaphores : Semaphores are used when we want to have a bind on the total number of concurrent
+threads which are able to access a shared resource. for e.g. a typical example is ConnectionPooling.
+In connectionPooling ,we set a bound on the number of connections that are to be created,so for e.g.
+if we have 10 connections , and we have 15 simultaneous requests for connection. What do we do ?
+Either we make the 5 extra connection requests wait of create more resources(which can be tricky and can blow memory).
+If we decide make these wait we would typically use semaphores,where in on each request we call acquire method
+on semaphore,which internally increments count by 1 and when done,we call giveup which would decrement count by 1.
+This save us to write the extra logic for incrementing and decrementing and managing automaticity of this flag.
+
+
+
+------------------------------ ThreadLocal --------------------------------------------
+ThreadLocal is a Datastructure which is unique to a given thread, so if create a ThreadLocal instance
+and then multiple threads access it, it is like a new ThreadLocal instance created per thread and only
+that thread is able to read and write to it.
+It can be used on cases where we want to have some state maintained through the complete lifecycle of the thread.
+For e.g., i had implemented thread local in a web project, where i needed to store the user-name of the person
+who has called the servlet and this name would be used in multilple places like logging by the thread with user-name
+persisting in the DB with the same user-name.
+
+
+--------------------------------------------------------------------------------------------
+Need to check
+1) What is AtomicReference and its uses
+2) Race condition and Data Race are different. Need to understand this
+3) Check what is -server JVM and -client JVM. It is said to be good in debugging.
+4) Need to understand and implement ThreadLocal
+5) Difference between Callable and runnable. Where and how is callable used ?
+6) Need to check on Compare and swap(CAS) algorithm.
+7) Thread pools are implmented using semaphores (need to understand this)
+8) Need to see thread dumps on windows and linux.
+9) vmstat on unix and perfmon on windows reports number of context switches. Need to check how ?
+10)ConcurrentHashMap uses 16 locks . This way it allows 16 concurrent threads to access it. Need to check further.
+11) Need to understand more on interuption.
+12) How can we implement multi-threaded JMS listener ? How does ge-sub today read and commit threads concurrently.
+
+
+------------------------------------------ JMS ------------------------------------------
+
+Durable vs non-durable subscription : If a subscription is durable, it is a sort of guranteed message
+delivery irrepective of the fact that the subsciber is up at the point of message send.
+Where as if it is non-durable,message wont be delievered to the client if it is down.
+
+Does JMS handle encription : JMS specification does not have any such api's. Encrpt/Decrpt would be
+handled by JMS provider like IBM,Tibco etc.
+
+------------------------------------------ XML ------------------------------------------
+
+If in an xml , we need to include a schema below needs to be done
+
+Need to define the namespace for the current Tag
+Need to define the schemaLocation (i.e. xsd for the xml)
+Now schemaLocation is an attribute defined by xml consortium (w3) , so we first need to 
+declare it, and then use the schemaLocation Tag to define the location of xsd
+
+<beans xmlns="<Some URL>" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"    (This is the namespace for XML Schema)
+       xsi:schemaLocation="<URL> <XSD Name>">
+
+</beans>
+
+
+Benefits of Schemas over DTDs
+
+We cannot define datatypes for elements in DTD's 
+There is no concept of Namespaces in DTD's
+  Namespaces allow conflict management of elements having the same name
+  The concept is similar to packages in Java . By this concept we can have 
+  different elements having same name. for e.g. if we have a car element
+  which takes a mandatory colour attribute and other car element with optional
+  colour element , we can use these 2 elements in the same xml using namespaces.
+  Where a default namespace represents either or them and a named namespace (for e.g a,b)
+  represents the other one.
+
+
+
+
+------------------------------------- Annotations -------------------------------------------------
+
+
+What i understand is providing a name for a behaviour and simply attach the 
+name to any entity (for e.g. a method) and the rest is taken care of.
+
+For e.g. in Spring if we want Transactional behaviour inside a method say
+a method does 2 updates and 1 insert and we want this behaviour to be
+made transactioanl , we simply annotate the method as @Transactional
+and the rest is taken care of. No writing boiler-plate code of catching
+exceptions and commiting and rolling back . Everything is in order just
+by using the Annotation Type Transactional 
+
+How is this acheived is to be seen
+
+In assence Annotations could also be seen as a replacement for xml 
+configurations .
+What would be an example for this ?
+
+
+Broadly 3 things are attached with the run-time behaviour of an annotation
+
+1) Define Meta Data for an annotation 
+
+2) Attaching annotation to various entities
+
+3) Defining the run-time behaviour for an annotation
+
+	Run-time behaviour control is majorly achieved using reflection
+	API, lets start by building a class which when passed a Class
+	will print all the method names with their arguments and instance
+	variables of the passed Class
+	
+	
+--------------------------------------My SQL---------------------------------------------------
+To start various processes required for My Sql
+
+start /B c:\mysql\mysqlc\bin\ndb_mgmd -f conf\config.ini --initial --configdir=c:\mysql\my_cluster\conf 
+start /B c:\mysql\mysqlc\bin\ndbd -c localhost:1186
+start /B c:\mysql\mysqlc\bin\ndbd -c localhost:1186
+start /B c:\mysql\mysqlc\bin\mysqld --defaults-file=conf\my.cnf
+
+
+Shows the process status 
+c:\mysql\mysqlc\bin\ndb_mgm -e show
+
+
+
+This launches the mysql client console
+c:\mysql\mysqlc\bin\mysql -h 127.0.0.1 -P3306 -u root
+
+
+---------------------------------------  JSF-----------------------------------------------------------
+
+Early thoughts on JSF
+
+1) It is a framework which offers custom tags which can be mixed with HTML Tags (like JSP Custom Tags)
+
+2) Libraries provided by JSF broadly can be categarised in the below
+
+	i)JSF Core
+	ii)JSF Html
+	
+
+
+-------------------------------------- Web Services ----------------------------------------------------
+What is a Web Service
+Web Service is typically any service that is exposed over the web.Service takes an input and returns
+XML as a response . The sender and receivier can be in any Platform (i.e. Java or .net) because finally
+the output is going to an xml which can be parsed by any platform
+
+
+Comparison of JMS and Web-Service
+Both are communication modes where 2 endpoints (receiver and sender communicate) . Web-service is synchronous 
+mode of communication where as JMS is a-sync.
+In the book (Apache CXF) it is mentioned that Restful Service can be used with JMS , would be interesting to know
+why would both be used together.
+
+Rest is a Architectural Style .. Need to know exactly what does this mean
+
+Majorly 2 Types of Web-services 
+
+1) SOAP Based (Would have xml as an output)
+2) RestFul (Can have either of XML or JSON(JavaScript Object Notation) as an output)
+
+
+RestFul
+
+
+Things to check
+How to apply filters using CXF ? Filters are a mechanism to highjack request or response
+and apply some business logic.
+
+------------------------------------------------- Maven -------------------------------------------------------
+
+
+
+------------------------------------------------- GitHub ------------------------------------------------------
+
+GitHub is an open source configuration management tool, where we can share projects to anyone
+
+
+-------------------------------------- Concepts Good to know --------------------------------------------------
+
+
+
+Enterprise Service Bus (ESB) 
+Which HTTP method will websites which intend to transfer money etc use ?
+Asking this question because it seems if Post method is used than 2 clicks will initiate 2 sessions.
+Need to check on this
+
+CMS (Content management systems) help to create the websites very easily ... some examples of CMS are
+Wordpress,Drupal , Jhoomla

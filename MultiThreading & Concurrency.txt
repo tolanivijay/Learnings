@@ -1,0 +1,28 @@
+
+---------------------------- Difference between Concurrency and Parallelism ------------------------------------------
+Concurrency : It would typically mean in a multithreaded environment where
+				there are various threads running, i try and protect state
+				efficiently through locks etc so that threads do not result
+				in incorrect output.
+				
+Parallelism : It means breaking a problem to smaller chuncks and allow these
+				chunks to run in parallel which makes it much faster than
+				sequential way.
+
+
+---------------------------------------Fork/Join Pool-------------------------------------
+
+It is recursive where in we devide a given task into smaller sub-tasks till a given point.
+
+Important classes
+
+1) ForkJoinPool extends ExecutorService
+		has 3 imp methods
+		1) invoke which is sync call
+		2) execute(task) which is async call and does not return anything
+		3) submit(task) which is async call and it returns something.
+2) ForkJoinTask <Base_class>	
+	It has methods like compute(),fork(),join() etc
+		RecursiveTask
+		RecursiveAction
+-------------------------------------------------------------------------------

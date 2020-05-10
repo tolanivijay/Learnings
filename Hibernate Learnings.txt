@@ -1,0 +1,12 @@
+--------------------------------- Steps for Hibernate ---------------------------------
+
+Create a hibernate config xml(hibernate.config.xml) which has various properties respective
+to the database i.e. connection,driver,username,password etc.
+
+Map a javabean to a table using 'Entity' annotation.
+'Id' annotation defines which is the primary key on the table.
+
+Create a session factory (Need to create only one session factory as it is resource intensive)
+Create a session out of this session factory.
+Use save on the object to insert record in db.
+

@@ -1,0 +1,57 @@
+Apache Kafka can be understood as a distrubted messaging which should be used where the amount of data is humungoues 
+and is beyond the capacity of traditional messaging like queue or topic.
+
+If traditional messaging each queue or topic is hosted on a given server and the same server or broker takes all the load.
+If the amount of data is huge, the very same broker has to deal with all the producers and consumers.
+Clearly the above model does not allow for horizontal scaling and nothing much can be done if the load increases.
+
+The answer to above limitation is Apache kafka which can be considered as a distrubted messaging which we can scale
+horizontally (i.e. increasing new nodes as needed).
+
+
+There are typically 2 use-cases which typically any distrubuted system tries and solves 
+i.e. messaging (Apache Kafka), caching(Hazelcast), processing(Apache Storm), persisting (MongoDB)
+
+1) Horizontal scaling 				: Increasing nodes on the fly which increases performance
+2) Highly available or Resilency 	: The system is not dependent on any set nodes, if any of these nodes crash at run-time, the load is 	automatically 							transferred 	to other nodes
+										
+Abstractions in Kafka
+
+Nodes, Partitions, Topics, Cluster, Producer, Consumer, Consumer groups
+
+1) Topic 		: Topic is the same concept that we have in traditional messaging i.e. if the same message has to be supplied to multiple consumers,
+					topic is used, so if we have 2 consumers listening from a topic, both of them would get all the messages on the topic.
+1) Node 		: Node can be termed as a instance of Kafka server running. Typically we will have instance of server running one per physical server 
+					because if we have multiple instances running on the same box and if the box crashes, we have a huge problem.
+2) Cluster 		: Cluster is nothing but a collection of nodes. Typically we will never have a case where a Kafka cluster will have only 1 node.
+					This defeats the use-cases which kafka caters to. For e.g. you want messages to be highly available, so you would try to maintain
+					copies of the same message across multiple nodes, so if a node goes down other is ready and there is no downtime.
+4) Partitions	: Partitions are the core concept behing Kafka. Partitions are a logical distributions of messages, very much like hashing concept.
+					So for e.g. if you decide to have 3 partitions on a given topic, Kafka would create 3 buckets and place the messages in either of
+					the buckets based on round robin fashin (default), or based on a key which can be provided. The important point to remember here is
+					each partition can be considered an entity which can be replicated.
+5) Replications : Replications (or copies) serves use case of high-availability, so if a message is replicated across many nodes and if a particular 
+					node goes down, the message can be read from other node, so you are not dependent on any 1 node and hence the system becomes more
+					resilient or highly available.In kafka each partition is replicated. so for e.g. if a topic has 3 partitions and has replica factor 
+					of 3, kafka would create 3 buckets and each of these 3 buckets would have 2 more copies on other nodes. Each of the buckets would
+					have a leader which would be primary node for reading and writing any data for the given bucket. If it goes down, then either of the
+					2 secondaries would now become primary and hence would start serving requests for the bucket.
+6) Producer			Producer is the simple producer which we have in a messaging framework, which writes messages to a topic. A particular topic can have 
+					n number of producers. Each producer on writing message can chose to provide a key for the message, and kafka would internally calculate
+					hash key of the message and write it a given partition.This can be used when you want to control which message wants 
+					to go in which partition.
+6) Consumer			Consumer is the one which consumes messages from a topic. If there are 5 consumers on a topic, all the consumers would 
+					get all the messages, so this is a typical case of pub-sub or one to many model.
+8) Consumer groups	Consider there are 3 partitions on a topic and the topic has many producers, so there are lots of messages to be consumed at a 
+					significant rate to live up to the pace of producers.Now in a typical messaging framework here comes the limitation, the read one
+					a queue or topic is single threaded, so we cannot have many threads reading concurrently from a messaging queue, the best you can do is
+					read the message and park it in memory in some data structure like list or queue and make the read and process part async, However 
+					this approach can be risky as if there is abrupt stop of the JVM, you will loose messages. Solutions for this is Consumer groups.
+					Consumer groups like consumers in a given family (group Id). So if there are 3 consumers in a consumer group 
+					(say all have group Id as 'group-3'), each of the consumers are assinged a given partition and it would read messages only 
+					from the assigned partition. This way we are parallelizing the consumption part. A consumer in a consumer group would be assinged
+					one or more partitions, say if there are 3 partitions and we have only 1 consumer in a group, it would take all the load and be 
+					assinged all the 3 partitions.
+9) logs and offset	Each partition in kafka is nothing but a immutable log queue where each new message is appended at the end of the log and is
+					assinged an off-set.This log is replicated across the nodes depending upon the replication factor.
+10) Zookeeper					

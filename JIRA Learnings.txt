@@ -1,0 +1,13 @@
+------------------------- EPICS ----------------------------
+
+Epics can be termed as a Tag or a group, so for e.g. i have 2 high level tasks say 
+1) RegHub Migration
+2) Brexit-PDR
+
+both of them become Epics for me and i can tag each tasks to either of them
+
+In JIRA, we can link 2 tasks or issues but we cannot specify the order in which completes first, it has to be self managed.
+
+Plan Mode : 	It is at the planning stage
+Work Mode : 	This is when we start a sprint. 
+		It has To-do, In Progress & Done which clearly tells me which tasks are done and which are pending.

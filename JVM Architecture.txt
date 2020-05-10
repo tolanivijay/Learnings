@@ -1,0 +1,32 @@
+JVM is broadly divided into the below areas
+
+1) Class Loaders
+	Class Loaders have the responsibility to load classes in memory.
+	
+	a) BootStrap Loader
+				BootStrap Loaders load internal java classes found in rt.jar, so all internal java classes are loaded by it.
+	b) Extension Loader
+				Any extension classes or jars found in bin/lib/ext area are loaded by extension loader
+	c) App Loader
+				Any application related classes available on the classpath are loaded by App Loader
+	
+2) RunTime Area
+	a) Method Area or Perm Gen
+		This will have all the class level data like class variables, static data etc
+	b) Heap
+		All the objects live here
+	Below are all respective to Threads
+	c) PC Register
+		This is the area where execution instructions for given thread. Each thread will have its own PC Register 
+	d) Stack
+		Maintains the stack trace of all executing threads, if this area gets full, we would get StackOverflowError
+	e) Native Stack
+		This area is used if our code calls any Native code like C++ calls etc.
+
+3) Execution Area
+	a) Interpretor
+		Helps to convert the byte codes generated to talk to native OS like windows/unix etc.
+	b) JIT Compiler & Hotspot Profiler
+		Caches calls for Interpretor, so that same instructions dont need to be writen again.
+	d) GC
+		Used for garbage collection at run-time.

@@ -1,0 +1,40 @@
+Connectivity to MongoDB can be achieved using 2 ways.
+	1) Use mongodb-driver jar without using any framework.
+	2) Use Spring data mongo, which is wrapper above mongo driver and is very convenient to use.
+
+
+------------------------- Spring Data Mongo ----------------------------------
+There are broadly 2 ways in which connectivity to mongo can be established using spring data
+
+	1) Using MongoRepository
+	2) Using MongoTemplate
+
+Though MongoRepository seems to be a very simple solution it is generally not recommended over using MongoTemplate.
+Why ? Need to check.
+
+	MongoTemplate: Below are the high level classes which needs to be understood.
+		MongoClient and MongoClientOptions : Both of these classes are coming from Mongo Driver and broadly would abstract
+							Mongo connection options like URL,port, time to live etc.
+
+		MongoOperations and MongoTemplate : MongoOperations is an interface and MongoTemplate is an implementation. It would
+							broadly have methods which can be used to read and write to MongoDB. It will have 
+							most of the implementations that is required, however if one needs to go at the 
+							driver level, we can do so using execute method of MongoTemplate which would				
+							expose the driver API's.
+		MongoDBFactory			: It is just a wrapper class over MongoClient and would majorly abstract dbName.
+
+
+
+MongoTemplate is a thread-safe class and can be used across multiple instances.	
+
+
+WriteConcern : How to identify if a write is succesful ? It is just write to Primary node, Primary + all Secondary or any other combination.
+		Write concern is the policy which defines the same.
+
+ReadConcern:
+
+
+
+---------------- Things to try/know -----
+a sample program connecting to mongo without using spring data.
+Why is MongoRepository not recommended ? is it treadsafe.
