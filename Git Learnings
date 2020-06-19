@@ -1,1 +1,32 @@
---------- Git -----
+Git is a Distributed Version control which is different than Central Version Control systems like SVN and Perforce.
+
+Central Version Control :
+	Here most of the operations are dependent on the server, so if you have to commit, see history etc,
+	all of these operations are done on the server, where the client has just the snapshot of the server.
+	
+	
+Distributes Version Control :
+	Here we have concept of local repo and remote repo and local repo is like a mirror image of remote server
+	at a given point of time. It not just has the code but a complete history of changes available at
+	client side. Only when we have to push the changes across to the server, we need to go online.
+	All commits can be done to local repo and then we can push all these commits at any given point of time
+	to the server.
+	
+Git is LightWeight :
+	Logically Git is based on concept of repo and a repo can have n number of branches. Now when we clone
+	the repo, we get branches and history of all the branches in repo, so it has to be consuming lot of 
+	disk space right ? Actually no, Git uses compression very well , so even though it stores lot of matter
+	it is surprisingly very lightWeight.
+	
+
+Git Vs GitHub
+Git necessarily means repo on local and GitHub is the central Repo.
+
+
+
+Gitignore : what is it ?
+
+
+
+-------------------------------------- Git Commands ------------------------------------------
+git init : git init will create a local repo. Possibly this is used to create a new repo ?		
