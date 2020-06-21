@@ -23,6 +23,10 @@ Git Vs GitHub
 Git necessarily means repo on local and GitHub is the central Repo.
 
 
+origin :
+Each Repo will have a unique URL, origin is nothing but the alias to this Repo. So in short,
+origin will be the link to the Central Repo URL.
+
 
 Gitignore : what is it ?
 
@@ -30,3 +34,9 @@ Gitignore : what is it ?
 
 -------------------------------------- Git Commands ------------------------------------------
 git init : git init will create a local repo. Possibly this is used to create a new repo ?		
+
+
+
+----------------------------- To be checked ------------------------------
+How to find what is the link origin is pointing to ?
+What is Git stash ?
