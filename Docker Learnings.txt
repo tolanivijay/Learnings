@@ -59,6 +59,7 @@ e.g. when we run a tomcat image and need to find directory where tomcat is insta
 	Actually exec -it is to get into the container. Container is like a tight box which does
 	not interacts with the outside world. So if we need to get inside the container this command
 	is used. In above example , it points us directly  to the home location of the container.
+	Use command 'exit' or 'cntl-d' to come out of the Container env.
 	
 To copy any file on installed image path, for e.g. when we need to copy war file to Tomcat webapps folder
 	docker cp '<local_file_path>' <container_id>:'<path on the container>'
