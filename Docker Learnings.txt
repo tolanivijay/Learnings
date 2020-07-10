@@ -17,11 +17,21 @@ Web-service : If we run 2 docker containers of tomcat on port 8080, it works wit
 				Ip's are different, it is able to launch it.
 				We can use docker inspect <container_id> to check metadata respective to the container
 				including the IP and port.
+				
+Important aspect of Docker --
+Docker is a isolated environment, so when we install docker on any machine, docker will create an isolated
+linux environment inside this machine and will not allow anyone to interact with it. 
+For e.g. when we run a tomcat process inside docker, docker will show it runs on 8080 but when you try to
+reach out using 'localhost:8080', it wont work because of the isolated environment, i.e. the reason why we
+will have to map parts using -p option, so the below will map ports from docker's isolated env to localhost
+and once done 'localhost:8080' works. Behind the hoods, docker will create a firewall rule and allow exchange
+of ports.
 
---------------------- 		Basics -------------------
-	Each docker container has a container id and image id. What is the difference between them ? Need to check
-	Each docker image needs a port to run ? Is it ? because when we run tomcat image we specify both the ports
-	i.e. port of docker and port of Tomcat.
+docker run -p 8080:8080 -p 8009:8009 <image_id>				
+
+in the above case we are mapping ports 8080 (Tomcat port)and 8009 (AJP connector port) from isolated docker
+env to the localhost
+
 	
 --------- Commands ----
 To see docker installation meta-data
@@ -63,6 +73,9 @@ e.g. when we run a tomcat image and need to find directory where tomcat is insta
 	
 To copy any file on installed image path, for e.g. when we need to copy war file to Tomcat webapps folder
 	docker cp '<local_file_path>' <container_id>:'<path on the container>'
+	
+To copy any file from container to local file system
+	docker cp <containerId>:<path on the container> <local_file_path>	
 	
 To commit any existing container
 	docker commit <container_id> '<name_of_repo>:<Tag_of_repo>'	
