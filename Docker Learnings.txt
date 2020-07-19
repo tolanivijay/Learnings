@@ -10,6 +10,63 @@ which communicates with the server (hub.docker.com). This communication is requi
 we want to pull or push images.
 
 
+----------------------- LifeCycle of Docker -----------------------------
+Image is the basic aspect of Docker. Image can be anything like a centos/alpine/ubuntu linux or a
+Tomcat or a MYSQL or anything.
+
+A materialized image is called a Container. Very much similar to Class and Objects in Java.
+
+Images are available of DockerHub, which we need to pull on our machines to run them (via docker pull).
+
+Once we have images on local, below is the lifecyle of the image.
+
+1) 	CREATED : 	Create a Container from a image e.g. docker create <image_name>
+				Above will create a new container from the provided image and assign a 
+				unique hash<container_id> to the container.
+				
+2)	RUNNING :	Once the image is created, we can start the image and once started, it goes into 
+				the running state. e.g. docker start <container_id>.
+				
+	docker run <image_id> is a combination of both the above commands i.e. create and start.
+	
+3)	STOPPED :	We can stop a running container (using docker stop <container_id>), in which
+				case it will go in the stopped status.
+				
+4)	PAUSED	:	We can also pause a running container (though not sure in which use case we may
+				want to do this), using docker pause <container_id>, in which case it goes 
+				in the paused status. we can unpaunse it using docker unpause <container_id>
+				
+	Any stopped containers can be started again using docker start <container_id> command and
+	it will start up with the state with which it was stopped.
+	
+5)	REMOVED	:	Once we feel a stopped container is not required any more, we can remove 
+				the container using docker rm <container_id>, in which case, this instance
+				of image is done away with.
+				
+				
+Important thing to understand here is, till the container is removed, all the data which the container
+collected till it was up (like logs created, etc) is available. 
+Docker maintains a non persistent storage where it stores data for all running or stopped containers.
+Once the container is removed, this non-persistent data is also removed.
+This non-persistent data is stored at <tomcat_installation>/<storage> (storage could be found out using docker info).
+So till the container is removed, it will keep occupying the space it used while its runs (like logs etc) 
+
+
+Below commands help to understand container lifecyle.
+
+docker ps 					---> This will list only the active containers (i.e. running and paused)
+
+docker ps -a 				---> This will list all the available containers (i.e. all non removed containers).
+															
+docker run --rm <image_id>  --> This command should be used with care only for non-prod env's as it will remove
+								the container as soon as it is stopped, so should be used only for test images
+								etc.
+
+
+-------------------------------------------
+
+
+
 Web-service : If we run 2 docker containers of tomcat on port 8080, it works without any issue. How ?
 			  How can 2 services run on same port ? This is because docker uses 2 different IP's for
 			  launching these containers but uses the port 8080. By default Tomcat hosts on local 
@@ -19,7 +76,7 @@ Web-service : If we run 2 docker containers of tomcat on port 8080, it works wit
 				including the IP and port.
 				
 Important aspect of Docker --
-Docker is a isolated environment, so when we install docker on any machine, docker will create an isolated
+Docker is an isolated environment, so when we install docker on any machine, docker will create an isolated
 linux environment inside this machine and will not allow anyone to interact with it. 
 For e.g. when we run a tomcat process inside docker, docker will show it runs on 8080 but when you try to
 reach out using 'localhost:8080', it wont work because of the isolated environment, i.e. the reason why we
@@ -56,11 +113,12 @@ To kill or stop a container
 	Both of these will stop the container,however stop will ensure
 	graceful shutdown and kill will just kill the container process.
 	
-	
+To remove an image from local
+	docker rmi <image_name>	
 	
 To run Tomcat image 
-	docker run -p <tomcat_port_no>:<?> <tomcat_image_id>	
-	Why do we specify 2 different ports ?
+	docker run -p <isolated_env_port_no>:<port_no_host_machine> <tomcat_image_id>	
+	
 	
 To find the home or installation directory of the software	
 e.g. when we run a tomcat image and need to find directory where tomcat is installed, we use
@@ -85,7 +143,10 @@ To find all events happening inside docker on the host
 					other events that are associated with docker on the host.
 
 To know stats of CPU and memory usage for a container
-	docker stats <container_id>					
+	docker stats <container_id>
+	
+To login to dockerhub from local
+	docker login - u <user_name> -p <password>						
 					
 To add notes later
 	docker run <image_name>	
@@ -119,7 +180,7 @@ Docker file is named as Dockerfile and it defines metadata about the image.
 i.e. 	which OS is the base of the docker file
 		Which all commands are run for the docker file
 		
-so a docker image is assisimilation of OS, software and its dependencies.
+so a docker image is assimilation of OS, software and its dependencies.
 
 Each command on the docker file mostly creates a new container and then joins the
 previous and current image and forms a new image. Possibly it removes the temporary
@@ -240,13 +301,17 @@ WORKDIR
 192.168.99.100
 
 
+----------------------------------- Docker Volume ------------------------------
+
+docker volume 
 
 
 ----------------- 		Need to know --------------------------------------	
 
 Git bash vs Command prompt. what is the difference and which is better.
 What is busybox image.
-
+What is docker-machine active command ? What is it used for ?
+Need to check difference between exec and run and when to use what ?
 
 Need to know more about exec -it command and what exactly it is used for.
 
