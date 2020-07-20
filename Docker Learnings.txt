@@ -148,32 +148,56 @@ To know stats of CPU and memory usage for a container
 To login to dockerhub from local
 	docker login - u <user_name> -p <password>						
 					
-To add notes later
-	docker run <image_name>	
-	
-	docker ps
-	Seems to be similar to 'docker container ls', need to check more
-	
-	docker ps -all
-	Seems to be showing the last command which was run.
-	
-	docker inspect <container_id>
-	Gives meta information regarding the container for e.g. IP address etc.
-	
+----------------------------------- Persistence in Docker ------------------------------
 
------------------------- Imp things noted ---------------
+As we know data which docker container generates (i.e. logs, cache output etc) are short lived
+and they stay only till the container is 'NOT Removed'. However they can be a major drawback as
+we may not want to loose logs after the container is removed. For similar situations, Docker
+provides us with options of persitence. Broadly, there are 2 flavors of persistence.
 
-$ docker run hello-world
-Unable to find image 'hello-world:latest' locally
-latest: Pulling from library/hello-world
-0e03bdcc26d7: Pulling fs layer
-0e03bdcc26d7: Verifying Checksum
-0e03bdcc26d7: Download complete
-0e03bdcc26d7: Pull complete
-Digest: sha256:8e3114318a995a1ee497790535e7b88365222a21771ae7e53687ad76563e8e76
-Status: Downloaded newer image for hello-world:latest	
-	
+1) BindMounts : This helps us to map a folder on the container to the folder on local os.
+				for e.g. if we want the logs from the container to be directly available
+				on the local, we can use it. Also an very important use case of using it
+				is development on local. For instance if we are using a Tomcat docker container,
+				we will have to always copy the eclipse code on the docker and test it out on docker.
+				instead if we map the webapps folder on container to webapps on local, the copy
+				thing completely is eradicated. 
 
+
+
+2) Volumes (or Mounts)  : 	Works very similar to a Mounted drive. Here the persistence is completely
+							managed by docker, which is a bit different than BindMounts where there is
+							a dependency on local file system. As per docker, this is the preferred 
+							persistence mechanicm. This method can be chosen when there is a need to
+							share data among multiple containers. for e.g. if there are configurations
+							which needs to be used across containers, this can be prefered. Mounts 
+							are used in various such cases in production and this volumes can be used
+							in such cases.
+							
+
+Below is the command to map logs folder on container to a new volume called tmpVolume.
+
+	docker run -p 8080:8080 -v tmpVolume:/usr/local/tomcat/logs
+
+Also after this, if we inspect the container we can see the mount type as 'volume',
+mapping the respective source and destination folders.
+
+"Mounts": [
+            {
+                "Type": "volume",
+                "Name": "tmpVolume",
+                "Source": "/var/lib/docker/volumes/tmpVolume/_data",
+                "Destination": "/usr/local/tomcat/logs",
+                "Driver": "local",
+                "Mode": "z",
+                "RW": true,
+                "Propagation": ""
+            }
+        ]							
+
+
+One important thing to remember is for bindMounts we will need to give an absolute path 
+to the local directory, else it considers it as a volume.
 
 ------------------------ Docker File -----------------------
 Docker file is named as Dockerfile and it defines metadata about the image.
@@ -188,6 +212,34 @@ image which was	created.
 
 Caching : Docker creates a cache of the dockerfile once run, so that if we build image 
 again, it is much faster.
+
+
+Docker file commands
+
+RUN
+
+FROM
+
+MAINTAINER
+
+ADD
+
+CMD
+
+ENTRYPOINT
+
+ENV
+
+EXPOSE
+
+USER
+
+VOLUME
+
+WORKDIR
+
+
+192.168.99.100
 
 ----------------- Docker Sub commands -------------------------------------
 docker network  : 
@@ -271,39 +323,6 @@ Use-case : 	If i have a project which is having 5 micro-services interacting wit
 			i have a problem. For such case, we just build a parent image having 
 			all the 5 child micro-services images and we can start and stop the container
 			as a single unit.
-
------------------------------  Docker file -----------------------------------
-Docker file commands
-
-RUN
-
-FROM
-
-MAINTAINER
-
-ADD
-
-CMD
-
-ENTRYPOINT
-
-ENV
-
-EXPOSE
-
-USER
-
-VOLUME
-
-WORKDIR
-
-
-192.168.99.100
-
-
------------------------------------ Docker Volume ------------------------------
-
-docker volume 
 
 
 ----------------- 		Need to know --------------------------------------	
