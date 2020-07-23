@@ -1,11 +1,62 @@
-------------------------------------------------------- Need to check ---------------------------------------------------
+POM --> Project Object model
 
-As in the example to turn a Spring boot application to a WAR deployable, we had to define the embedded Tomcat
-dependencey as 'Provided'. Need to understand more on the dependencies scope.
+By default Maven expects 
 
-<dependency>
-     <groupId>org.springframework.boot</groupId>
-     <artifactId>spring-boot-starter-tomcat</artifactId>
-    <scope>provided</scope>
-  </dependency>
+source code in 				: src/main/java
+test classes in 			: src/test/java
+compiled classes in			: target/classes
+compiled test classes in 	: target/test-classes
 
+-------------------- Build Life cycle --------------------
+Below are the steps of build life cycle in maven where steps are linked in the given order
+So for e.g. if we trigger Step 8 (via mvn deploy), all steps from 1 to 8 are triggered.
+
+1) Validate
+2) Compile
+3) Test	
+4) Package 		: maven-jar-plugin(jar)
+5) Integ Tests	: 
+6) Verify
+7) Install		: maven-install-plugin(install)
+8) Deploy
+
+
+-------------------------- Repositories -------------------------
+Maven (like git), has a concept of local repo and central repo. We will need to
+configure both, so effectively all the dependescies of all the projects used on
+current system will be available in local repo, so if any other project wants to
+use the same dependency it does not go to the central maven repo.
+
+------------------ Imp Commands ------------------------
+
+To check Maven installation version : mvn --version
+
+
+Compile classes : mvn compile
+	This will compile everything under src/main/java
+
+Compile test classes : mvn test-compile
+	This will first compile sources and then tests under src/test/java
+
+Cleaning maven output : mvn clean
+	This will delete the target folder
+	
+Running tests : mvn test
+	This will compile src, tests and then try to run the tests 
+	and show output of test on console.
+	
+------------------- Maven plugins ----------------
+
+maven-compiler-plugin : This will be used when compilation is triggered.
+
+
+maven-clean-plugin : This will be used when clean is triggered.
+
+
+maven-surefire-plugin : This is triggered when mvn test is executed.
+
+
+
+---------------- Need to check --------------------
+Final jar does not include the test-classes. why ? 
+then how will the automated junits be run on any external tool.
