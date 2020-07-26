@@ -7,18 +7,87 @@ test classes in 			: src/test/java
 compiled classes in			: target/classes
 compiled test classes in 	: target/test-classes
 
--------------------- Build Life cycle --------------------
-Below are the steps of build life cycle in maven where steps are linked in the given order
-So for e.g. if we trigger Step 8 (via mvn deploy), all steps from 1 to 8 are triggered.
+-------------------- Build Life cycle phases --------------------
+Below are the phases of build life cycle in maven where phases are linked in the given order
+So for e.g. if we trigger Step 8 (via mvn deploy), all phases from 1 to 8 are triggered.
 
-1) Validate
-2) Compile
-3) Test	
-4) Package 		: maven-jar-plugin(jar)
-5) Integ Tests	: 
-6) Verify
-7) Install		: maven-install-plugin(install)
-8) Deploy
+1) validate		:
+	This is the phase in which all the validations are performed i,e if the POM is present and it is
+	well-formed and it has the correct tags etc.
+	
+2) compile		:
+	In this phase, Maven will look into the source directory (i.e. src.main.java by default) 
+	and compile them. If the compilation is good , classes are stored in target/classes directory by default.
+	
+	Plugin : maven-compiler-plugin
+	
+3) test			:
+	This phase would compile the test classes defined in the directory (i.e. src.test.java by default) and
+	place the compiled classes in target/test-classes directory by default. Also it would execute those cases
+	and the report of the execution is placed at target/surefire-reports
+	
+	Plugin : maven-surefire-plugin
+	
+	
+4) package 		: 
+	This phase would package the project (as jar,war, pom etc) and place the package at target folder.
+	
+	Plugin : maven-jar-plugin(jar)
+	
+5) integ Tests	: 
+6) verify
+7) install		: 
+	This would take the packaged jar available at target and places the jar in local repo 
+	(which we generally configure in settings.xml)
+	
+	Plugin : maven-install-plugin(install)
+	
+8) deploy		:
+	This would generally be used to take the package from local repo and publish to the central repo,
+	however with build tools like TeamCity and Jenkins, not sure if it would be used.
+	
+
+-------------------------------- Plugin and Goals ---------------------------------------
+Consider Plugin like a Class and Goal its static method. If we want to execute a goal, we will need to
+refer it like compiler:compile.
+
+So Goal has the real logic that would be executed.In above e.g. compile goal has all the logic for
+compilation of the project. 
+
+
+resources
+	resources
+	testResources
+
+compiler
+	compile
+	testCompile
+	
+surefire
+	test
+	
+jar
+	jar
+	
+install
+	install
+	
+deploy
+	deploy					
+	
+plugin
+	descriptor
+	addPluginArtifactMetadata	
+
+-------------------------- Inheritance in Maven --------------------------------
+If we check in eclipse, there is a tab called Effective POM, which is a big xml which is present.
+This xml is the final effective xml. In Maven each POM inherits from Super POM and what we do is
+customize our needs in our POM and the combination of our POM and super POM becomes the final
+Effective POM which is used in any of the phases.
+ 
+
+
+Command to see effective POM from command line : mvn help:effective-pom
 
 
 -------------------------- Repositories -------------------------
@@ -26,6 +95,43 @@ Maven (like git), has a concept of local repo and central repo. We will need to
 configure both, so effectively all the dependescies of all the projects used on
 current system will be available in local repo, so if any other project wants to
 use the same dependency it does not go to the central maven repo.
+
+
+
+---------------------- Dependency Management -----------------------------
+Each project will have dependencies for e.g. my project uses log4j for logging,
+so i would need log4j jar, and similarly i can have multiple dependencies. We can
+add our dependencies in this section for the same. 
+
+Now say i have dependency on a.jar and a.jar in its pom says it has dependecny on 
+b.jar and it can go on. So on just adding a.jar, maven will help pull all the dependent
+dependecis for me. So by just including 1 jar, we might end up have 5 jars in the project.
+This can be also very tricky to handle because say we have 2 dependencies a.jar and b.jar
+and a.jar has dependency on c-1.0.jar and b.jar is dependent on c-2.0.jar. in above case
+c.jar is the single artifiact which has 2 versions and both cannot be on the project, so 
+maven will decide which out of these 2 c.x jars to pick. We can also specify the same.
+This dependency hierarcy can also be viewed in Eclipse.
+
+If any of the dependencies being brought by a dependency, we dont require, we can also exclude it.
+
+
+There are certain configurations in <Dependency> section which are important to know. 
+
+Scopes of dependencies :
+
+
+1) test
+
+2) compile
+
+3) provided
+
+4) runtime
+
+5) import
+
+6) system 
+
 
 ------------------ Imp Commands ------------------------
 
@@ -44,6 +150,12 @@ Cleaning maven output : mvn clean
 Running tests : mvn test
 	This will compile src, tests and then try to run the tests 
 	and show output of test on console.
+
+Maven with debug option (-X)
+	mvn clean -X will give more output i.e. it runs in debug mode.
+	
+Download all source files for the dependencies
+	mvn dependency:sources	
 	
 ------------------- Maven plugins ----------------
 
@@ -57,6 +169,21 @@ maven-surefire-plugin : This is triggered when mvn test is executed.
 
 
 
+
+------------------- Multi Module Project -----------------------------
+
+
+
+
+-------------------- Maven Tomcat Plugin ---------------------------
+
+We can run Tomcat using this plugin without having to install Tomcat. Check how ?
+
+
+
 ---------------- Need to check --------------------
 Final jar does not include the test-classes. why ? 
 then how will the automated junits be run on any external tool.
+In video, it is shown how to change source and target version in the <build>, but it does not work.
+check on it.
+
