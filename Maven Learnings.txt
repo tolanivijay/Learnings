@@ -7,44 +7,80 @@ test classes in 			: src/test/java
 compiled classes in			: target/classes
 compiled test classes in 	: target/test-classes
 
--------------------- Build Life cycle phases --------------------
-Below are the phases of build life cycle in maven where phases are linked in the given order
-So for e.g. if we trigger Step 8 (via mvn deploy), all phases from 1 to 8 are triggered.
+--------------------- Lifecycle, Phases, Goals, Plugins and Execution ----------------------------------------
+Goals is the place where real Business logic is defined and Goals live inside plugins.
+Consider Plugin as a Class and Goal as a method, so to call a given goal you will have to 
+say <plugin>:<goal>, so compile goal can be called via mvn compiler:compile.
 
-1) validate		:
-	This is the phase in which all the validations are performed i,e if the POM is present and it is
-	well-formed and it has the correct tags etc.
+Now Lifecycle in maven is a series of steps (or phases) which are executed in an order. Phases can then be attached
+to 0 or more goals.
+
+Consider Lifecycle to be a pre-defined template to achieve a task.For e.g. for a project which is packaged as a jar
+it would be first compiled, the test packs would compile, test packs would run to ensure nothing is broken, then
+it would be packaged as a jar and finally the jar is placed at a set location. All of this can be achieved by running 
+just a command i.e. mvn install which is a phase in the 'default' lifecycle which would call all the phases before it
+and achieve the above. 
+
+So when we hit mvn clean install, all phases in Clean lifecycle till clean and all phases in default lifecyle till
+install are called in the order.
+
+So in short we mostly call a phase in maven and maven will ensure all phases are called till that.
+We can also call a specific goal if required.
+
+There are majorly 2 lifecycles in Maven.
+1) Default
+2) Clean
+
+Default Lifecycle Phases and its Plugin goals:
+		It has many phases but the most important are defined as below.	
+ 
+	1) validate	(No Plugin Goals)	:
+		By default this is not tied to any plugin goals, so it would not do anything.
 	
-2) compile		:
-	In this phase, Maven will look into the source directory (i.e. src.main.java by default) 
-	and compile them. If the compilation is good , classes are stored in target/classes directory by default.
+	2) compile	(compiler:compile)	:
+		By default it is tied to compiler plugin's compile goal.
+		In this phase, Maven will look into the source directory (i.e. src.main.java by default) 
+		and compile them. If the compilation is good , classes are stored in target/classes directory by default.
 	
-	Plugin : maven-compiler-plugin
+	3) test	(surefire:test)		:
+		By default it is tied to surefire plugin's test goal.
+		This phase would compile the test classes defined in the directory (i.e. src.test.java by default) and
+		place the compiled classes in target/test-classes directory by default. Also it would execute those cases
+		and the report of the execution is placed at target/surefire-reports
 	
-3) test			:
-	This phase would compile the test classes defined in the directory (i.e. src.test.java by default) and
-	place the compiled classes in target/test-classes directory by default. Also it would execute those cases
-	and the report of the execution is placed at target/surefire-reports
+	4) package (jar:jar)		: 
+		By default it is tied to jar plugin's jar goal.
+		This phase would package the project (as jar,war, pom etc) and place the package at target folder.
 	
-	Plugin : maven-surefire-plugin
+	5) verify (no Plugin Goals)		:
+
+	6) install (install:install)		: 
+		By default it is tied to install plugin's install goal.
+	
+		This would take the packaged jar available at target and places the jar in local repo 
+		(which we generally configure in settings.xml)
+	
+	7) deploy (deploy:deploy)		:
+		By default it is tied to deploy plugin's deploy goal.
+	
+		This would generally be used to take the package from local repo and publish to the central repo,
+		however with build tools like TeamCity and Jenkins, not sure if it would be used.
+	
+
+Clean Lifecycle and its plugin goals
+
+	1)	Pre-clean (No plugin goals)
+	
+	2) 	Clean (clean:clean)
+	
+	3)	Post-clean (No plugin goals)
 	
 	
-4) package 		: 
-	This phase would package the project (as jar,war, pom etc) and place the package at target folder.
-	
-	Plugin : maven-jar-plugin(jar)
-	
-5) integ Tests	: 
-6) verify
-7) install		: 
-	This would take the packaged jar available at target and places the jar in local repo 
-	(which we generally configure in settings.xml)
-	
-	Plugin : maven-install-plugin(install)
-	
-8) deploy		:
-	This would generally be used to take the package from local repo and publish to the central repo,
-	however with build tools like TeamCity and Jenkins, not sure if it would be used.
+Executions and Build plugins :	
+	<build> tag in pom.xml is nothing but a build plugin. It is a way to configure a build according to your need.
+	Simplest e.g. for a use case when you need to configure your build is to set a set compiler version for the
+	project. In this case we will need to configure our build and add plugin or maven-compiler-plugin (compiler)
+	and set a set compiler version.
 	
 
 -------------------------------- Plugin and Goals ---------------------------------------
