@@ -1,0 +1,9 @@
+
+---------- Alpine OS for Linux -----------------
+
+apk add openjdk8
+
+java is installed at : /usr/lib/jvm
+
+export JAVA_HOME="/usr/lib/jvm/java-1.8-openjdk"
+export PATH=$PATH:$JAVA_HOME/bin

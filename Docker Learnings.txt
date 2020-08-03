@@ -129,6 +129,14 @@ e.g. when we run a tomcat image and need to find directory where tomcat is insta
 	is used. In above example , it points us directly  to the home location of the container.
 	Use command 'exit' or 'cntl-d' to come out of the Container env.
 	
+Docker run vs exec
+	run command is used to start a new container given an image.
+	For e.g. if we have to start a new tomcat process, we will call run command.
+	
+	exec command is to execute any command inside a running container.	
+	If we need to go inside the container running the tomcat process, we will call "exec -it bash",
+	and this will interactively start a bash shell inside this container.
+	
 To copy any file on installed image path, for e.g. when we need to copy war file to Tomcat webapps folder
 	docker cp '<local_file_path>' <container_id>:'<path on the container>'
 	
@@ -216,27 +224,37 @@ again, it is much faster.
 
 Docker file commands
 
-RUN
+RUN	: To run any command on the container for e.g. getting java8 installed via
+		RUN apk add openjdk8
 
-FROM
+FROM : This is the base image from which we need to create a new image.
 
-MAINTAINER
+ENV : To set any environment variables like JAVA_HOME or PATH
+		ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
+		ENV PATH $PATH:$JAVA_HOME/bin
 
-ADD
+COPY : This also seems to copy a file from local to the given container.
+
+ADD	: This seems to be used to copy any file from local to the given container.
 
 CMD
 
-ENTRYPOINT
+MAINTAINER : 
+
+ENTRYPOINT : is it the command to be run ?
+			 in the video, ENTRYPOINT ["java","-jar","<jar-name>"], this command was used
+			 to start the spring boot container.
 
 ENV
 
-EXPOSE
+EXPOSE : In case of a rest endpoint or a tomcat process, we will need to expose a port of the
+			container, this command helps with the same.
 
 USER
 
 VOLUME
 
-WORKDIR
+WORKDIR : This should be the default directory where the user is landed once we get into the shell.
 
 
 192.168.99.100
