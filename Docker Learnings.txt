@@ -208,53 +208,110 @@ One important thing to remember is for bindMounts we will need to give an absolu
 to the local directory, else it considers it as a volume.
 
 ------------------------ Docker File -----------------------
-Docker file is named as Dockerfile and it defines metadata about the image.
-i.e. 	which OS is the base of the docker file
-		Which all commands are run for the docker file
-		
-so a docker image is assimilation of OS, software and its dependencies.
+Docker file is named as Dockerfile (case sensitive) and it defines metadata about the image.
+So for e.g. if i need to have a sample java 'HelloWorld' program to be run on docker, i have to
+sort out a few dependencies to get the program running.
+
+First i need a Linux env, second i need java installed on it , third i will need to get my
+HelloWorld.java on this env, compile it and finally run the app.
+
+All these dependencies can be sorted out with help of a Dockerfile, which would define all of these.
+
+So a docker image is assimilation of OS, software and its dependencies.
 
 Each command on the docker file mostly creates a new container and then joins the
 previous and current image and forms a new image. Possibly it removes the temporary
 image which was	created.	
 
-Caching : Docker creates a cache of the dockerfile once run, so that if we build image 
-again, it is much faster.
-
+Caching : Docker creates a cache of the Dockerfile once run, so that if we build image 
+again, it is much faster as it will only start from the modified part and any of the
+previous changes are picked up from the cache. 
 
 Docker file commands
 
-RUN	: To run any command on the container for e.g. getting java8 installed via
-		RUN apk add openjdk8
+FROM : 
+	This is mandatory command and each Dockerfile should start with it.
+	This would define the base image from which we need to create a new image.
+	Most often we will provide a Base image, however if we want to build a completely
+	new image, we can specify SCRATCH, which means there is no base image.
+	So, typically for a HelloWorld java progam, we can have base image as any Linux 
+	distribution (like Alpine,Ubuntu etc) and install Java on it or can simply build from
+	a OpenJDK image which will have a Linux and Java installed on it.
+	
 
-FROM : This is the base image from which we need to create a new image.
+RUN	: 
+	This command is run only during the buildtime (not runtime) and is typically used
+	to decorate the docker image for any dependencies for e.g. if we take base image 
+	as Alpine, we need JDK to be installed and RUN command can help installing it.
+	by calling 'RUN apk add openjdk8' 
 
-ENV : To set any environment variables like JAVA_HOME or PATH
-		ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
-		ENV PATH $PATH:$JAVA_HOME/bin
+ENV : 
+	This is used to set any enviorment variable which is required by the program like
+	PATH,CLASSPATH etc. for e.g.
+		
+	ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
+	ENV PATH $PATH:$JAVA_HOME/bin
 
-COPY : This also seems to copy a file from local to the given container.
 
-ADD	: This seems to be used to copy any file from local to the given container.
-
-CMD
-
-MAINTAINER : 
-
-ENTRYPOINT : is it the command to be run ?
-			 in the video, ENTRYPOINT ["java","-jar","<jar-name>"], this command was used
-			 to start the spring boot container.
-
-ENV
-
+WORKDIR : 
+	This should be the default directory where the user is landed once we get into the shell.
+	If we provide any directory same for e.g. '/app/localstorage', this is created by default.
+	
 EXPOSE : In case of a rest endpoint or a tomcat process, we will need to expose a port of the
-			container, this command helps with the same.
+			container, this command helps with the same.	
 
-USER
+COPY : 
+	This is used to copy resources from host machine to the container. So to copy
+	java file or an executable jar, this command is used.
 
-VOLUME
+ADD	: 
+	This is very similar to COPY command, however it provides more functionalities.
+	(Need to check)
 
-WORKDIR : This should be the default directory where the user is landed once we get into the shell.
+-------------- Run Time commands -----------------
+CMD and ENTRYPOINT both are runtime commands and mostly can be used together in the file
+to provide dynamism to the behavior. For e.g. we have a test app for which we need to 
+execute a command say echo 'Hello Docker', but we also want to override this command to something
+else say 'ls -ltr' , for such cases we will use CMD command. Below is the description of the behavior
+how do these commands behave.
+
+USE CASE : To provide a default command and replace it will any command to be provided while running the app.
+
+What to use : 	ONLY CMD.
+				command provided while running the app will override the default command in CMD.
+				for e.g. docker run <container_id> <OVERRIDE_CMD>
+ 
+USE CASE : To execute a java program but get Main arg list while running the container
+
+What to use :	ONLY ENTRYPOINT
+				Command used while running the app will work as an arguments to the command in the entrypoint.
+				for e.g. docker run <container_id> <ARG List seperated by spaces>	
+
+USE CASE : To execute a java program with default arg list but to override this list with args provided while running
+			the app.
+
+What to use : BOTH CMD and ENTRYPOINT
+				argument list provided in CMD becomes the default arg list to ENTRYPOINT cmd , however it will be overridden
+				by ags list provided while running the app.
+				for e.g. docker run <container_id> <ARG List seperated by spaces>
+				
+
+----------------- Commands syntax --------------------
+Commands like RUN,CMD and ENTRYPOINT can be run with 2 different types of syntax.
+
+CMD ["executable","param1","param2"] (exec form, this is the preferred form)
+CMD ["param1","param2"] (as default parameters to ENTRYPOINT)
+CMD command param1 param2 (shell form)
+
+----------------------
+			 
+MAINTAINER :			 
+
+USER :
+
+VOLUME :
+
+
 
 
 192.168.99.100
