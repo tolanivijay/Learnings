@@ -1,0 +1,40 @@
+----------------------------- 12 factor App ----------------------------
+12 factor app means the best practices behind building microservices.
+
+1) Version Control 		: 
+Codebase should have version control like Git,SVN etc. so there is a central repo which tracks all the changes 
+and talks to build and deploy tools.
+
+2) Dependencies			: 
+Isolate your dependencies and make the app thin. Also the app should define all its dependencies. So on a high level
+use tools like maven where the dependencies are available remotely but can be fetched during build time.
+
+3) Configs				: 
+Seperate out configs from the code base and have seperate configs for each envionment like QA,PROD etc.
+So effectively the configs should sit on another repo and should be deployed individually.
+
+4) Backing services		: ??
+5) Build,release,run	: Should have clear segregation between build, release and run phases	
+							<Need to understand more on this>
+6) Stateless-ness		: App should be stateless and should not have features like sticky sessions
+7) Port-binding			: Should be discoverable over a specific port.
+8) Horizontal scaling	: Should be able to scale horizontally and no dependency of environment etc.
+
+9) Disposability		: 
+Should be able to kill an instance of a service (due to any runtime issues) and it should not any affect 
+on the runtime environment.Similarly we should be able to spin up services easily if the load becomes
+too high.
+
+10) Dev/prod parity		: 
+Sometimes some infra or setup for dev and production is different which can cause issues to indentify problems. 
+So all environments should be as similar as possible.
+
+11) Logs				: 
+Treat logs as event streams ??? Need to understand more.It talks about centralized logging system.
+
+12) Admin processes		: ????
+																										
+																										
+------------- Things to understand ----------------
+Point 3 says seperate out configs from code but spring boot encorages to keep it. Why ?
+Logs in cloud environment ? How does it differ ?																										
