@@ -1,0 +1,8 @@
+Kubernetes is a container orchestration tool, so it manages deployment of containers.
+So one thing to note here is kubernetes will only manage containers and nothing else.
+It is very much like Apache Storm where you can achieve HA and Horizontal scaling, difference here 
+is Apache Storm will ask to implement its API's where as Kubernetes will work on any containers.
+
+
+
+

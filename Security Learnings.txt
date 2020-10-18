@@ -1,0 +1,27 @@
+SSO - Single Sign on.
+SSO is a mechanism where you have to sign in just once to access a host of applications where are provided.
+For e.g. if we login to google, then we dont need to login again to GMail,GDrive or any other google apps.
+
+------------------------------- Mechanism and Party's ----------------------
+Service Provider (SP) : 
+A SP is the party who is offering services for customers , so if i launch a website for users
+i am a SP.
+
+Identity Provider (IDP):
+IDP's sole purpose is to provide identity services, so that we can have secure access to site's or API's.
+so all customers or users for SP will have to register with the IDP and SP will redirect requests to IDP all the time.
+
+
+What happens when i try to access a SP.
+*) 	Whenever i try to access SP, requests are fwded to IDP, so in this case it is a first request so IDP will 
+	ask the user to provide authentication which can user-name/password or services like google where it generates
+	a token on the user mobile. On successful authentication, it generates a secure token which the browser possibly
+	caches (like cookies) and redirects the request to the SP. Also this secure token can have important information
+	for a user like authrizations etc, which the IDP can extract and show only elligible content to this user.
+*)	On any subsequent requests, the flow remains same i.e. it is sent to SP via IDP, but the difference is IDP will
+	not generate a new token but just validate the token generated from first request and rest everything is same.
+*)	If i offer multiple apps, i can authenticate the user via the same token each time (like google does for GMail.Youtube etc)			
+
+
+OKTA is a popular IDP.
+
