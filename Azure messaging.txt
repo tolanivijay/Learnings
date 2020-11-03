@@ -1,0 +1,20 @@
+Azure Message Service
+
+Azure Service Bus : Seems more like Queues and Topics, managed by Azure.(Messaging as a Service) 
+
+Event Grids : Distributed Data Steaming
+
+Event Hubs : It is like a Distributed messaging like Kafka.
+
+
+
+
+Event Source
+
+	
+ 
+	
+Dead Lettering :
+	
+	
+Create Storage account	

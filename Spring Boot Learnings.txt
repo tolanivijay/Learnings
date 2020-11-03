@@ -1,3 +1,47 @@
+--------------------------- Spring Boot Starter and Auto Configurations ------------------------------------
+Starters : 	
+
+This is the main concept behind the success of Spring Boot. Due to it by just including a Starter pom as dependency, 
+all the dependencies w.r.t the module are automatically downloaded and included in your project. For e.g. 
+a typical web-service app if we dont have Sprint Boot, we will need to find all the Spring libraries for json, xml,
+Spring MVC,JDBC etc and also we need to download tomcat and ensure it is available in various environments. 
+On top of this, we have to ensure that all the libraries are compatible with each other or else we get 'ClassNotFoundError'
+related issues at runtime.
+Spring Boot does all of the above and it would get all the dependent libraries and Tomcat for us and we dont need to 
+worry about anything. Amazing isnt it ?. Boot can do all of these with the help of Starter pom's which is like a 
+Maven Parent pom, which would fetch all the dependencies along with it.
+
+Auto-configuration : 
+
+Auto-config is also a magical feature of Boot. Remember Boot's USP is it helps to get started with the project
+very fast and does most of the work for you, and expects you to override the behaviour for your project just
+by providing configurations in application.properties, for e.g. if we need to provide server port of tomcat to 
+be 9090, it can be done by 'server.port' property. 
+Classes and libraries which enable all this magical work is loaded by Spring and some of this libraries which 
+are loaded are defined in 'spring.factories' file which can be found in 'spring-boot-autoconfigure-2.0.0.RELEASE.jar\META-INF'
+
+Imp files in spring-boot-autoconfigure-2.0.0.RELEASE.jar\META-INF
+	spring.factories :
+	As mentioned this specifies which all libraries will be loaded at starter of Spring Boot.
+	
+	spring-configuration-metadata.json and additional-spring-configuration-metadata.json
+	This file has the collection of all the property files that we can specify in the application.properties/yaml.
+	It defines additional information like default values for these configurations etc.
+	 
+
+-------------------------------------------- SpringApplication class --------------------------------
+SpringApplication is the central class which helps to start Boot application. This controls lot of properties like
+WebApp Type etc which can be controlled by configuring this class at startup.
+
+Application Types : Spring supports 3 application type and default is 'Servet', need to understand more on this.
+
+1)Sevlet
+2)Reactive
+3)None
+
+
+----------------------------------------------- Basics ------------------------------------------------ 
+
 @SpringBootApplication : This is the main annotation which is to be used to enable a application as Spring boot.
 It is a convinience annotation which would automatically enable the below.
 
