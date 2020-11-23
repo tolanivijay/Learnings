@@ -1,0 +1,8 @@
+Cloud Native Build packs introduced in version 2.3.0 of Spring boot where we dont need to
+provide a DockerFile for Boot apps starting with version 2.3.0.
+
+Maven command for creating a image for a given Spring boot app :
+	mvn spring-boot:build-image
+	
+	where spring-boot is the plugin name and build-image is its goal.
+	 

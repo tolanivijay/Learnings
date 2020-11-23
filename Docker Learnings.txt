@@ -362,8 +362,9 @@ Driver attributes:
 -------------------------------------------
 Docker image : This is another subcommand which gives imp info regarding the given image
 
-Docker image history <image_name> : Gives all the meta-data or build info using which			
-									the image was built.
+Docker image history <image_name> : 			
+	As we know a docker image is formed out of layers of images i.e. a base image and various other things.
+	All this layered information is available through this command.								
 
 Docker image inspect <image_name> : Gives useful info regarding the image.									
 
