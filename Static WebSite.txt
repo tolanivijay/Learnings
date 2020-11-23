@@ -1,0 +1,28 @@
+CMS (Content Management System)
+	WordPress
+	Drupal
+	
+Getting templates
+	Template monster 	-- https://www.templatemonster.com/
+	w3 layouts 			-- https://w3layouts.com/
+
+Template Moster
+W3 layouts
+
+
+Static site generators or Static CMS
+	Jekyll
+		Based on Ruby and will need to understand architecture 
+	Hugo
+	Nuxt
+	next.js
+	Gatsby
+		it will need node js installed for development and not for
+		serverside deployment
+		
+		
+Automatic website builders
+	Pingendo
+			
+What is Wamp ?
+
