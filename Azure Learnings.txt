@@ -1,15 +1,73 @@
+High level group of services which Azure provides
+	Compute
+	Storage
+	Identity and Access Management
+	Networking
+	Database or persistance
+	Management
+	AI+Machine Learnings
+
+
+--------------------------- Identity and Access Management Options ---------------------------
+Azure Active Directory (AAD) :
+	This is the most important service in this space. It provides both identity and access management 
+	So if as a small organization wants to use azure, this service will allow them to define different
+	users for their organization and also helps to specify what roles they can acquire. Roles can be
+	anything like Read-only to write and admin. This can be done by creating groups which has designated
+	permissions and assign users to these groups.
+
+Tenant
+	Tenant is an organization or user which owns a particular directory.
+	When-ever you or your organization subcribes to Azure 
+	a Active Directory instance is created and it is assigned a tenantId.
+	So tenant can be thought of as a instance of AAD. 
+
+Azure Active Directory Domain Service (ADDS)
+	It is a lighter version of AAD which is deployed on premise, this is for organizations 
+	to use the same credentials on premise and on cloud as the main use case.
+	
+App Registrations :
+	One more thing that can be done from AAD, is specify which all applications exist in my space.
+	So as an organization, i might 2 different apps say App1 and App2. so i will go ahead and 
+	register them using AAD. On Registration of a given app, it is assigned a App Id.
+	And yes, this app lives on the tenant, so it has Tenant Id too associated with it.
+	
+	Secrets :
+		An application can have secrets. Consider secrets as a password but it is a hashCode and
+		not a plain text password. You could add secrets for an application from the portal.
+	
+Service Principals (SP): 
+	This is a type of identity in Azure and it is used to identify various resources. When we create
+	a new App on the portal, by default a SP is created behind the scenes and is associated with the
+	Application. The core purpose of SP is controlling access. For e.g. if my application wants access
+	to a Key Vault which was created. i will need to assign the given SP for an app 'list' and 'get'
+	permission on the key vault.
+	
+	In below case, i am assigning 'get','list' permission on Key-Vault tolanivijayKV to Service Principal
+	for a given app.
+	
+	az keyvault set-policy --name tolanivijayKV --spn 8f2c18ce-98fe-48aa-a7e1-4b63f5ac61d8 --secret-permissions get list
+	
+	
+On Portal, we get 2 ways to access an application (i.e. App Registrations and EnterPrise Applications),
+what is the difference between them ?	  	
+	 
 --------------------   Azure Compute Options ------------------
 
 Computing is on high level where to get an app deployed in Azure. Azure provides us 4 compute options as below
 
 1) VM's
-2) Containers
+2) Containers via Azure Kubernetes Service (AKS
 3) server-less computing (e.g. functions)
 	Server-less on a high level means define your functionality and submit it to Azure and it will take care 
 	where these needs to be deployed and other similar aspects. So we dont need to containerize them or
 	deploy them on VMs, we just define the functionality (via functions) and not worry anything more.
 	Functions are typically end-points of events, say trigger an email(function) if the order is placed.
 4) Azure App Service
+	Consider it as a App for which we need dont need to worry about hosting, for e.g. for a WAR or a 
+	Boot Jar, we need to find where to host the app and env setup i.e. VM which has java or Tomcat installed.
+	If i dont want to worry about the hosting infra, we can consider App Service which is a Platform as a 
+	Service (PAAS) offering.
 	Typically for mission critical apps which are performance oriented, Azure provides this option where
 	it would scale apps for us and we have to focus only to provide Business logic.
 
@@ -24,12 +82,54 @@ However need to explore more if required.
 1) Virtual or Unmanaged disks	: 
 2) Managed disks 				: They have better availability than virtual disks.
 
+
+
+------------------ Azure Networking Options -----------------------------------
+1)	Virtual Networks (VNET):
+		Compute options like VM is like a dedicated machine which sits on the internet.
+		Now on internet, it has to be a part of some network which is controlled and can
+		have firewalls etc, which can block any unauthorized access.
+		VNET can be thought of this private network, whenever we create any VM in Azure,
+		it has to be part of a VNET and hence we will always have to create one or assign
+		an existing one while creating a VM. 
+		Now apart from security, one more advantage we get here is that components sitting 
+		on the same VNET are faster or have low latency, so my DB sitting on VM1 and service
+		sitting on VM2 can have a faster communication if they are part of same VNET.
+		
+2)	Load Balancers
+		Load Balancers we know can help distribute load of incoming traffic. It would
+		majorly balance load for various machines.
+3)	Application Gateway
+		One more type of Load Balancer, but majorly used for path based routing, so 
+		if http://mysite/help and http://mysite/app are 2 endpoints for my service.
+		i can have /help service to be sitting on VM1 and /app to be sitting on VM2.
+		and application gateway can help do the above routing. 
+4)	DNS Zones
+5)	Content Delivery Network(DNS) Profiles
+		
+
+------------------ Azure Management Options --------------------------------------
+1)	Log Analytics
+		Log Analytics Workspace is the service which will allow to steam any logs
+		say on a VM on the UI.Also we can implement some monitoring solutions here.
+
+2)	Cost Management+billing
+		Cost Management + Billing is the service which can help you with the current
+		cost and various other billing related things.
+		
+3)	Automation Account
+4)	Metrics
+
+
 --------------------- VM's in Azure --------------------------
 All Vm's in Azure have at-least 2 disks associated with it.
 	1) OS Disk
 	2) Temp Disk : Data here will get lost when the VM is shutdown.
 
 
+To run a restful endpoint in Azure.
+	Ensure port 80 and 8080 are enabled by creating inbound rule in Networking.
+	80 is HTTP port and 8080 is the default port where services are launched.
 
 ------------------ Accessing Azure ------------------
 Need to explore these methods.
@@ -97,11 +197,15 @@ Web app for Containers 			: This is the way to create webapps for Containers
 								  (i.e. Spring boot or Tomcat ones)
 
 
+------------------------- Imp Info ---------------------------------------------------
+Azure gives us a free DNS name, which we can use.
+	To explore the path is Azure Active Directory --> Custom Domain Name.
 
 ------------------- Things to check -------------------------------------------------------
 Azure :
 	Need to check how logs are updated and if we can check logs via SSH to host-name etc.
 
+Roles in Azure ?
 
 Kudu : What is Kudu and what does it provide.
 Azul Zulu : It provides JDK, Need to understand more.

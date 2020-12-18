@@ -1,0 +1,23 @@
+
+-------------- Ubunto learnings ----------------
+To install any package : 
+	sudo apt install openjdk-8-jdk-headless
+
+To login as root
+	sudo -s	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+------------------- SSH -------------------------
+To login using any private key on local machine.
+
+ssh -i ./<key_name> tolanivijay@51.141.51.30	

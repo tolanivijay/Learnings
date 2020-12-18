@@ -1,0 +1,22 @@
+
+To check version of az installed :
+	az -v
+		
+To login to CLI : (This will open up browser where the login is initiated)
+	az login	
+	
+List accounts on the login 
+	az account list
+	
+Show details for a given Service Principal (SP)
+az ad sp show --id cb7c4fac-ad44-45c1-abf2-2c3b2f3523d7		
+
+az ad sp list --display-name SpringBootTest
+
+
+az keyvault set-policy --name tolaniKeyVault --spn http://contososp --secret-permissions get list
+
+az keyvault set-policy --name tolaniKeyVault --spn 8f2c18ce-98fe-48aa-a7e1-4b63f5ac61d8 --secret-permissions get list
+
+
+az ad sp show --id 8f2c18ce-98fe-48aa-a7e1-4b63f5ac61d8

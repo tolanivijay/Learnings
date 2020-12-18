@@ -1,0 +1,23 @@
+What is a Stream ?
+Stream is like a continuous data pipeline where messages are posted continuosly, so we can consider a Stream to be
+like a MQ where number of messages are posted per sec or minute.
+
+Stream Processing :
+If the data is flowing continously, we also need a took/framework which can process those messages in realtime.
+Here as the messages are continously flowing, so our framework should also support and process these messages
+in realtime, else the number of messages will become too much for any system.
+
+
+Apache Storm
+Apache Flink
+Apache Spark
+Kafka Stream
+
+
+Data Storage	(Google File system)
+Data Processing	(Map Reduce)
+Data Retrival	(Google Big Table)
+
+
+
+Hadoop : Batch processing
