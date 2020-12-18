@@ -57,20 +57,42 @@ what is the difference between them ?
 Computing is on high level where to get an app deployed in Azure. Azure provides us 4 compute options as below
 
 1) VM's
-2) Containers via Azure Kubernetes Service (AKS
-3) server-less computing (e.g. functions)
-	Server-less on a high level means define your functionality and submit it to Azure and it will take care 
-	where these needs to be deployed and other similar aspects. So we dont need to containerize them or
-	deploy them on VMs, we just define the functionality (via functions) and not worry anything more.
-	Functions are typically end-points of events, say trigger an email(function) if the order is placed.
-4) Azure App Service
-	Consider it as a App for which we need dont need to worry about hosting, for e.g. for a WAR or a 
-	Boot Jar, we need to find where to host the app and env setup i.e. VM which has java or Tomcat installed.
-	If i dont want to worry about the hosting infra, we can consider App Service which is a Platform as a 
-	Service (PAAS) offering.
-	Typically for mission critical apps which are performance oriented, Azure provides this option where
-	it would scale apps for us and we have to focus only to provide Business logic.
+2) Containers via Azure Kubernetes Service (AKS)
+3) Server-less
+	Server-less is a concept where we can focus just on the business logic and not worry too much about
+	the infra, scale and other aspects.
+		3a) server-less computing (e.g. functions)
+				Server-less on a high level means define your functionality and submit it to Azure and it will take care 
+				where these needs to be deployed and other similar aspects. So we dont need to containerize them or
+				deploy them on VMs, we just define the functionality (via functions) and not worry anything more.
+				Functions are typically end-points of events, say trigger an email(function) if the order is placed.
+				Consider them more like a static functions, where we would take 0 to a few parameters and do something
+				based on them.
+				Azure offers 3 different plans at the moment which we can choose from to create functions .
+		
+				1) Standard
+					lesser of the plan and the limitation it brings is 
+						a) Execution time of max 10 mins, if goes beyond the time exception
+							is thrown
+						b) Can have cold start i.e. if the function is not called, it will 
+							take some time to initialize	
+				2) Premium
+					Above 2 limitation does not exist
+				3) App Service plan
+					If need more control i.e. dedicated hardware etc, go for this.
+		3b) Azure App Service
+				Consider it as a App for which we need dont need to worry about hosting, for e.g. for a WAR or a 
+				Boot Jar, we need to find where to host the app and env setup i.e. VM which has java or Tomcat installed.
+				If i dont want to worry about the hosting infra, we can consider App Service which is a Platform as a 
+				Service (PAAS) offering.
+				For scaling we can define various aspects which will automatically horizontally or vertically scale the app.
 
+	Azure Logic Apps :
+		One more interesting aspect in Azure Server-less space is Azure Logic Apps.
+		Functions are just a task or a API which does something, say take a Employee Object and Persist it, but if we want
+		to have logic say after the persist send an email saying the Employee was persisted, we need some integration mechanism
+		or a way to build over logic based on certain functions. say Call function 1, pass output from 1 to function 2 and so on.
+		Logic Apps serves this purpose. But it seems when we build logic Apps, we are tying to Azure, so be aware of this aspect.
 	
 ----------------- Azure Data Storage Options ----------------------
 It seems Azure has very limited options w.r.t data storage and it supports MSSQL and Cosmos DB (NoSQL DB like MongoDB).
