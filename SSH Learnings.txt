@@ -1,0 +1,3 @@
+To generate public-private key:
+	ssh-keygen
+		This will create keys in $HOME/.ssh
