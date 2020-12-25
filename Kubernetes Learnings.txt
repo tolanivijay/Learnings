@@ -1,8 +1,283 @@
-Kubernetes is a container orchestration tool, so it manages deployment of containers.
+Kubernetes(K8s) is a container orchestration tool, so it manages deployment of containers.
 So one thing to note here is kubernetes will only manage containers and nothing else.
 It is very much like Apache Storm where you can achieve HA and Horizontal scaling, difference here 
 is Apache Storm will ask to implement its API's where as Kubernetes will work on any containers.
 
 
+---------------------------------- Installation of Kubernetes ---------------------------------------------
+For Windows if Docker Desktop is available, we just need to enable Kubernetes and it will create a single node
+cluster for us. If Docker Desktop is not available, we need to install minikube which also will create a single
+node cluster for us.
 
+kubectl : This is the command line utility which can help to interact with K8s and needs to be seperately
+			downloaded and set on the PATH.
+
+
+
+---------------------------------------- K8s Basic Concepts -----------------------------------------------
+Deployment :
+	Deployments are to K8s what Class is to Java. It is blue print for various components.
+	
+	Types of Deployments:
+		Deployment (or PODS)
+		LoadBalancer (or Service) 
+
+	Imp Commands for deployments :
+		To show all deployments available:
+			kubectl get deployment
+	
+		To create a basic deployment for which YAML is auto-prepared by K8s: 
+			kubectl create deployment <NAME_OF_DEPLOYMENT> --image=<IMAGE_NAME>
+			kubectl create deployment tomcat-latest-deployment --image=tomcat
+			
+		To create deployment via YAML	
+			kubectl apply -f <yaml_file>
+		
+		To Edit deployment, while opens up YAML file for edit	
+			kubectl edit deployment <NAME_OF_DEPLOYMENT>
+			
+		To delete deployment, note this will also delete underlying PODS and its replicasets
+			kubectl delete deployment <NAME_OF_DEPLOYMENT>
+	
+		To show or describe a deployment
+			kubectl describe deployment <NAME_OF_DEPLOYMENT>
+	
+PODS :
+	PODS are where all the action or business logic is done. Consider it as a Java Object, which
+	are an instance of type 'Deployment'. Each POD in K8s is a seperate black-box like Docker
+	container and can be seen as an abstraction above a Docker image, i.e. it will hold Docker
+	container. Generally we will have just 1 container inside a given POD, however in some cases
+	we can have more than 1 container too running in a given POD. 
+	Each POD has an internal IP address, which would be different on each runs. 
+	
+	Replicaset:
+		The main benefit of K8s is to perform distibuted processing, where the load of a given
+		endpoint or a service is distributed. This distribution is achieved via replicaSet, which
+		is a property 'replicas', in production setup it will be at-least 3. When we create a POD
+		its replicaSet is automatically created by K8s.
+		
+		Command for replicaset:
+			To show all replicaset
+				kubectl get replicaset
+		
+	Name of the POD = <NAME_WE_SPECIFIED>-<ReplicaSetHash>-<PODHASH>
+		
+	Imp Commands for PODS :
+		To show all PODS available:
+			kubectl get pod
+			kubectl get pod -o wide (shows more info like Internal IP address, etc for the PODS)
+			
+		To show or describe a deployment
+			kubectl describe pod <pod_name>
+			
+Service :
+	It seems a service is always attached to a given cluster of PODS, for e.g. if we have
+	a micro-service which does some task and we have created 3 replicasets for the same,
+	so we will have 3 different PODS which would be created and are ready to service.
+	But we need a layer above them which can distribute the load. 
+	This purpose is served by the service layer, which will serve as a load-balancer and
+	distribute the load among these 3 PODS. Hence we define the type as 'LoadBalancer' in
+	the YAML file. A service can be both Internal and External (LoadBalancer). An External
+	service can be called from outside, and the internal one is only visible in its cluster.
+	A service will always have a Static IP address, because it is external facing and cannot
+	change.
+
+	Labels and Selector :
+		Each POD has a differnt IP address each time, so how come a service will know about them 
+		when they are up ? Here comes the idea of Label and Selector. Under label we define an
+		attribute called 'app' i.e. app=tomcat. Here we are saying that the POD will be tagged
+		as 'tomcat', each time it is up, also we specify the port for each POD via a property
+		containerPort. So here we are saying the POD is available as 'tomcat' on port say 8080.
+		
+		Now in service also we specify selector for e.g. selector:app:tomcat, which means this
+		service will look for PODS which are tagged as 'tomcat'. Also via property 'port' and
+		'targetPort', we specify which ports to search this app=tomcat. 
+		
+		Need to check what is difference between 'port' and 'targetPort'. 
+			
+	Load-Balancer Service :
+		For External services, we will need to specify which port this service is available on.
+		this is done by property 'nodePort'. There is a range of 30000 - 32000 for the port,
+		so choose port accordingly.		
+			
+	Imp Commands for Service :
+	
+		To show all services available:
+			kubectl get service
+
+		To show or describe a service
+			kubectl describe service <Service_Name>
+					
+		To delete service
+			kubectl delete service <Service_Name>
+			
+		To edit service
+			kubectl edit service <Service_Name>  
+
+NODE :
+	As the name says, a node is a machine which participates in the cluster.
+	Typically in production setup, we will have PODS deployed on seperate nodes.
+
+
+	Imp Commands for Node :
+	
+		To get all nodes:
+			kubectl get node
+
+
+Logs : To see the logs generated by the given POD.
+	kubectl logs <POD_NAME> 
+	kubectl logs tomcat-latest-deployment-748469db9c-9tlzx 
+
+To get into interactive shell for the container.	
+	kubectl exec -it <POD_NAME> <Command>
+	kubectl exec -it tomcat-latest-deployment-748469db9c-9tlzx bash
+
+
+------------------------------------------- K8s Other Commands -----------------------------------------------
+
+kubectl version
+kubectl config current-context
+kubectl cluster-info : Given info for given cluster.
+
+kubectl expose deployment tomcat-latest-deployment --port=8080 --target-port=8080	
+	What is this ?
+
+Need to understand this attribute.
+imagePullPolicy: Never
+
+--------------------------------------------- YAML Structure ------------------------------------------------------
+
+Deployment YAML structure
+	It has 3 parts
+	1)	metadata
+			labels 
+	2) spec
+			
+			selector
+			template:
+				template applies to a POD and can be considered to be 
+				blueprint for a POD.
+				 which is another config file, so it will have
+				 meta-data and specification sections
+	
+	
+	3)	Status:
+			This is automatically added by k8s.
+
+
+----------------------------------------NameSpaces -------------------------------------------
+NameSpaces :
+	A way to differentiate resources. It is not ideal to have everything in the same
+	namespace. by default everything goes in 'default' namespace.
+	By default, we have 4 namespaces, 3 are used by K8s and the last one is 'default'
+	
+	To get available namespaces
+		kubectl get namespaces
+		
+		
+	
+	
+
+---------------------------------------Helm ------------------------------------------
+Helm can be thought of a templating engine, which can help reduce same copy-paste over 
+and over again. 
+
+USE-CASE 1: Avoid redenduncy
+	Consider a project which has say 5 microservices which are exposed
+	externally, so we will have 5 PODs and 5 services at-least and for deployment of them
+	we will create YAML files for all the 10 components above. 
+	Now in a YAML file, 90% of the data will be repeated across all the components. With 
+	Helm, we can have a generic YAML file (or a template), which will have dynamic things
+	referenced and then we can create 10 different YAML files specific to the components
+	which will just have the dynamic thing. 
+
+
+USE-CASE 2: Ease of USE.
+	Certain products like ELK stack, come with its own HELM charts, so to name deployment
+	of various components in the stack becomes seemless for developers, other-wise 
+	developers will need to understand all the components and deploy them individually.
+
+
+USE-CASE 3: Env segregation.
+	For example, some configuration of environments are different, in such cases too we 
+	can use HELM and abstract common stuff in one YAML and env specific stuff in seperate
+	env YAML files.
+
+
+USE-CASE 4: Release Management
+	HELM-CLI is the client process
+	Tiller is the server process
+	For instance, we are going production for the first time and we need to deploy all 
+	the services at one-shot
+	
+	
+ 
+ 
+		
+
+			
+Ingress : This is the component which is front facing to user requests and then fwds the 
+			requests to respective POD's.
+			
+Config Map : This can be used to store application external properties like userName, password or secret etc.
+
+Data Persistance : K8s does not maintain any data persistence. so for app logs etc, we need to attach volumes
+					to it which is external to K8s.
+					
+Meta-Data for the PODs :
+	Deployment : This is the componenet where we define which POD should have how many instances etc.
+					This will be typically be used for state-less apps which don't write any state.
+					
+	StatefulSet : This component can be used for stateful apps like DB etc for ensuring replication etc
+					but is said to be complicated, so better avoid them.																	
+
+Node : A VM or a physical server which is part of k8s cluster.
+
+
+Services required on a Node to run K8s :
+	Container runtime :	
+		In most cases it would be docker, so we need docker installed on the node.
+	
+	Kubelet	: 			
+		Seems to be the same service which does all the work.
+		
+	Kube-proxy :
+		
+
+Master Processes :
+	API Server : This is the entry point and does authentication.
+	
+	Scheduler :	This is sort of brain of the schdeuling Business logic. 
+				It would look at various things like CPU, RAM usage etc and then
+				decide where would the next process be scheduled.
+				
+	Controller Manager :
+			It detects when a given pod dies and if it dies will communicate with
+			Scheduler and ask it to decide where this process needs to be restarted.
+			
+	etcd :
+			This is Key Value Store, where all the information of the cluster is stored.
+			So all the state of the cluster is stored here.					 	
+			
+			
+Minikube :
+			It is 1 node k8s cluster typically used for developers to try out things for K8s.
+			It will create a Virtual Box on the machine on which the node runs on.
+			Both the master and worker processes run on the same node.
+			It has Docker runtime preinstalled, so that containers can run on it.
+			
+kubectl : It is the command line tool (CLI) used to talk to K8s.
+						 
+
+Ways of talking to K8s
+	1) UI
+	2) API
+	3) CLI (or kubectl)
+	
+
+
+Production setup :
+	At-least 2 master nodes and 2 worker nodes.
+	
 
