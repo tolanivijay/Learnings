@@ -1,3 +1,92 @@
+-------------------------- Encryption in Transit (HTTP vs HTTPS) ---------------------
+HTTP :
+	When we use HTTP protocol , data packets moving from web-server to browser is in plain text.
+	This means any hacker if he is able to steal the packets in transit, he can easily understand
+	what was sent, which is a big vulnerability.
+
+HTTPS(secure) :
+	To solve the above issue, HTTPS can in light, which on high level would encrpt the packets in 
+	transit, so if any hackers gets these packets too, he would not be able to make sense of the same.
+	
+SSL (Secure Socket Layer) & TLS (Transport Level Security) :
+	SSL	was invented to solve this issue of security in transit or at the Transport layer.
+	TLS is the recent version of we can say an improved SSL and is used more often these days.
+	It can apply to any form of communication where security is needed i.e. 
+	
+	FTP(File Transfer Protocol)  --> SFTP : 
+		FTP is very well used where we have to transfer a 
+		file from one linux server to another one. It is still used actively, here too we transfer
+		data, so makes sense to encrpt the data in transit.
+	
+	
+	HTTP ---> HTTPS : 
+		Web is the most common use case where data is transfered from web-server to client browser,
+		hence data should be encrypted.
+	
+	How SSL,TLS works :
+		SSL uses a concept of public private keys to achieve security.
+		public private keys can be thought of as a unique combination which cannot operate without
+		each other, so a message encrypted with a given public key can only be decrypted with the 
+		the respective private key. As the name says public, so it is available to anyone, and 
+		anyone can use the public key to enrypt data, but no-one can decrpt it unless the holder
+		of the private key (which is available only by the service provider)     
+	 
+
+Certificates :
+	Certificates can be thought of an abstraction above public-private keys, which will also have
+	more information like who provided the certificate, to whom and the validity of the certificates
+	etc, but to the core it will use the same combination of public private key combination to 
+	achieve encryption/decryption.
+	
+	Certificate Authority (CA) :
+	CA's are the authority on the internet who issue certificates to providers who want to use
+	HTTPS. So if have a new website to launch, i will go to any CA's and seek a certificate from
+	them, and they will issue me a certificate for the said cost. This certificate will have
+	information about who issued the certificate, to whom and its validity.
+	Browsers generally identify certificates from trusted CA's and for the ones's they trust
+	they would not flag a warning. like for e.g. if we generate a self signed certificate via
+	keytool, then browser will flag it as warning to the user because it does not trust this
+	newer source.
+	
+	Public and Private Certificates.
+	Like we have public-private keys, we have public private certificates too, where public 
+	will hold public key and private will hold a private key.
+	
+	Process of communication between browser and web-server:
+	
+	On first request from browser to server, the server will send public certificate holding
+	public key to the browser.
+	The browser then validates if it trusts the certificate, else it flags the warning as 
+	mentioned above.
+	Browser then enrypts the data packet based on the given public key inside the certificate
+	and sends back.
+	Web-server then decypts the data using the private key and thus the whole data is secure
+	in transit.
+	
+
+Self-signed certificates :
+	As we know that CA's will charge us to provide certificates, so for developers who are just
+	trying out making HTTPS calls, java has provided a mechanism to generate self-signed certificates
+	we can use a program 'keytool', which comes bunduled with JDK to generate certificates.
+	
+	Keytool command
+	keytool -genkey -alias https-example -keyalg RSA -keysize 2048 -validity 365 -keypass password -storepass password -keystore https-example.jks
+	
+	Above is a command to generate self-signed certificate. In above case we are providing various
+	details to generate a certificate.Once it is done, it will generate a private certificate file called 'https-example.jks'
+	which we need to need to place on classpath. For Boot app, we need to enable the following properties.
+	
+	server.ssl.key-alias=https-example
+	server.ssl.key-store-type=JKS
+	server.ssl.key-store=classpath:https-example.jks
+	server.ssl.key-password=password
+	
+	TrustStore	: Certificates related to public certificates.	
+				It is used to store public certificates from CA's.
+	KeyStore 	: Certificates related to private certificates.
+				It is used to store current server's certificates
+	
+-------------------------------------------------------------------------------
 SSO - Single Sign on.
 SSO is a mechanism where you have to sign in just once to access a host of applications where are provided.
 For e.g. if we login to google, then we dont need to login again to GMail,GDrive or any other google apps.
