@@ -1,0 +1,25 @@
+Spring Config Server 
+
+	Need for a Config Server :
+		In a microservice architecture, there can be typically a lot of services which will rely on lot of external configurations.
+		Now, if we external the properties in an external file, we will have that many external files. 
+		Say for 10 microservices, we have 10 files, and in these we can have common configurations like DB URL,
+		so we have to duplicate them in all the config files, which is error prone.
+		Solution to above is we have a central service which has all the properties and clients connecting to this service
+		and resolve external configurations.    
+		
+	Config Server :
+		It is a service which will connect to a configuration source like github, file system etc and abstract the properties.
+		It should also have a web dependency as clients will connect to it via restful calls.
+		
+		To verify if config server is up :
+			The config server exposes the below end-points.
+			
+			localhost:9090/<property-file-name>/<profile>
+		
+			so if we have a property file called application.properties, it can be called via.
+			
+			localhost:9090/application/default
+		
+	Config Client :
+		It is any service which wants the configurations hosted by the config server.		

@@ -86,6 +86,11 @@ Self-signed certificates :
 	KeyStore 	: Certificates related to private certificates.
 				It is used to store current server's certificates
 	
+	keytool -list -keystore cacerts
+	command lists all the certificates available in the given KeyStore.
+	
+	There is a cacerts file in $JAVA_HOME/jre/lib/security, where is the KeyStore
+	
 -------------------------------------------------------------------------------
 SSO - Single Sign on.
 SSO is a mechanism where you have to sign in just once to access a host of applications where are provided.
