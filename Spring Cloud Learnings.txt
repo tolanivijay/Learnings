@@ -1,4 +1,4 @@
-Spring Config Server 
+----------------------------------------- Spring Config Server ---------------------------------------------- 
 
 	Need for a Config Server :
 		In a microservice architecture, there can be typically a lot of services which will rely on lot of external configurations.
@@ -22,4 +22,69 @@ Spring Config Server
 			localhost:9090/application/default
 		
 	Config Client :
-		It is any service which wants the configurations hosted by the config server.		
+		It is any service which wants the configurations hosted by the config server.
+		
+----------------------------------------------  API Gateway -------------------------------------		
+API Gateway acts like a entry point for web-services.
+
+
+Why to use :		
+	Common Cross cutting concerns like Authentication,Authorization, Usage tracking and performance can be
+	done here.
+	If we have requirements like API aggregation i.e. calling 2 services and send a aggregated response,
+	this can be achieved here.		
+	Can become a good strategy to avoid latency by the below model.
+		API gateway sits near the web-services, so latency is low.
+		It then aggregates calls and sends a response.
+		Above is much better than say the UI individually calling services away from it.	
+		
+Disadvantages :
+	It introduces one more network hop and a layer, so be mindful of this as it will add a layer of complexity too.
+	
+
+Tools for API Gateway
+	Zuul	 		
+		
+		
+
+------------------------------------- Discovery Service --------------------------------------------
+
+It is the layer of microservices which helps outside world, help find the services. 
+
+Examples of Discovery service is Eureka Server. 
+
+Eureka-Server :
+	It is not a individual server like Tomcat etc, but it is comes as a dependency in Spring Boot.
+
+	Eureka Server :
+		By Including dependency of Eureka server, your process becomes a certified Eureka Server
+		by doing annotation @EnableEurekaServer. 
+		Clients can then connect on the specific port of server and register themselves.
+		All Registered clients are shown on the console.
+	
+	
+	Eureka client
+		By Including dependency of Eureka client, your process becomes a certified Eureka Client
+		by doing annotation @EnableEurekaClient.
+		Also it registers with the server and lets it know that it is available and application 
+		name on the client becomes the keyword with which it registers and any processes who
+		want to call it can use by calling this keyword.
+
+	Client Side Service Discovery using @LoadBalanced.
+		Once the clients are registered, it can then be called by using the discovery. for e.g.
+		Service 1 wants to call Service 2, it can call the using the keyword mentioned above.
+		Also it needs to use Annotation @LoadBalanced, as there might be more than 1 instance
+		of the service registered, and the annotation will take care to chose either of the
+		instances to be called.This is called Client Side Load Balancing as the load balancing
+		is happening at the client level and we are not going to any server-side loadbalancer
+		like NGINX etc.
+
+
+Server Side Service Discovery
+
+Typically any load-balancer like Nginx can be used as a discovery service.
+
+		
+API to API communication
+	Open Feign
+	RestTemplate				
