@@ -1,0 +1,8 @@
+
+
+Terraform templates
+<component> <provider>_<type> <name>
+
+resource "azurerm_resource_group" "mytestRG"
+
+

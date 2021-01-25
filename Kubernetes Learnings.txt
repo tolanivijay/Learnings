@@ -48,7 +48,7 @@ PODS :
 	container and can be seen as an abstraction above a Docker image, i.e. it will hold Docker
 	container. Generally we will have just 1 container inside a given POD, however in some cases
 	we can have more than 1 container too running in a given POD. 
-	Each POD has an internal IP address, which would be different on each runs. 
+	Each POD has an internal IP (or private IP) address, which would be different on each runs. 
 	
 	Replicaset:
 		The main benefit of K8s is to perform distibuted processing, where the load of a given
@@ -281,3 +281,7 @@ Production setup :
 	At-least 2 master nodes and 2 worker nodes.
 	
 
+---------------------------------------------- Azure Kubernetes Service (AKS) ------------------------------------------------
+
+Control Plane (Azure Managed):
+	This is where all the master processes (API Server,Scheduler,etcd and Controller Manager) of AKS sits in

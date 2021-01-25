@@ -1,0 +1,48 @@
+Public IP vs Private IP
+	Public IP is any IP which is internet facing for e.g. if we ping google.co.in we get an IP back
+	and if we just put the IP in chrome, google.com page comes back. Any service exposed on internet has to have
+	a public IP.
+	
+	Private IP is the one which is not exposed in public, but is only visible in the given private network, like
+	corporate VM's etc.
+	
+IPV4 :
+	This is a way to identify an IP, which means IP is divided in 4 buckets, having 8 bits each, so a possibility 
+	of 2 raised to 8 combinations in each bucket, so in all 256.
+	
+	<0-255>.<0-255>.<0-255>.<0-255>, so any IP can be from the given combination.	
+	
+Virtual Network(VNet) on Azure
+	A VNet is visible only on a subscription and in a given region.So my Vnet cannot cross region boundaries.
+	Each VNET is assigned a range of IP's which it can use.
+	
+	Subnets are then the sub-division of network, so for e.g. VNet had 100 Ip's available, we can divide this 
+	in 3 Subnets with 30,40 and 40 Ip's respectively.
+	
+	Subnetting and CIDR (Classless Inter Domain Routing) :
+		Subnetting as we know is a way to divide an existing VNet in multiple subnetworks.One of the ways 
+		how subnetting is done is CIDR. for e.g.
+		
+		200.200.200.200/24 is an example of CIDR range which means first 24 bits are constant, so a subnetwork can
+		use any IP between 200.200.200.0 to 200.200.200.255 
+	
+	Resousces like VM's sit on any given subnet on a Vnet. This VM's can sit on any datacentre (or availability zone)
+	inside the region.
+	
+Network Interface Card (NIC)
+	NIC's normally help in communication with various resources, say for e.g. 2 VM's in a given subnet want to talk 
+	to each other, they can talk with the help of a NIC. Both these VMS are connected to a common NIC
+	and then the comminication is established. This NIC can have a private IP in this case which is used by VM to 
+	establish the connection.
+	NIC can be connected to NSG to setup firewall rules.  	
+
+
+NSG (Network Security Group) :
+	This can be thought of as a firewall which has rules which
+	all outbound and inbound traffic is allowed.
+		
+
+Region & Avaliability zone :
+	Avaliability zones are data-centeres supported in a given region.
+	
+	
